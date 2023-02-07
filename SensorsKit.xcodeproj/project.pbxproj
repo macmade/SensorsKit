@@ -1,0 +1,400 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05BD73262992AF9A00CF4FD7 /* SensorsKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 05BD73252992AF9A00CF4FD7 /* SensorsKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		05BD7282299275AB00CF4FD7 /* SensorsKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SensorsKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		05BD72BF299290A000CF4FD7 /* CODE_OF_CONDUCT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CODE_OF_CONDUCT.md; sourceTree = "<group>"; };
+		05BD72C0299290A000CF4FD7 /* Release - ccache.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Release - ccache.xcconfig"; sourceTree = "<group>"; };
+		05BD72C1299290A000CF4FD7 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
+		05BD72C2299290A000CF4FD7 /* Debug - ccache.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Debug - ccache.xcconfig"; sourceTree = "<group>"; };
+		05BD72C3299290A000CF4FD7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		05BD72C4299290A000CF4FD7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		05BD72C5299290A000CF4FD7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		05BD72C6299290A000CF4FD7 /* Release - Library.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Release - Library.xcconfig"; sourceTree = "<group>"; };
+		05BD72C8299290A000CF4FD7 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		05BD72C9299290A000CF4FD7 /* Architectures.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Architectures.xcconfig; sourceTree = "<group>"; };
+		05BD72CB299290A000CF4FD7 /* Issues.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Issues.xcconfig; sourceTree = "<group>"; };
+		05BD72CD299290A000CF4FD7 /* Apple-APIs.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Apple-APIs.xcconfig"; sourceTree = "<group>"; };
+		05BD72CE299290A000CF4FD7 /* Generic-Issues.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Generic-Issues.xcconfig"; sourceTree = "<group>"; };
+		05BD72CF299290A000CF4FD7 /* Security.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Security.xcconfig; sourceTree = "<group>"; };
+		05BD72D0299290A000CF4FD7 /* Objective-C.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Objective-C.xcconfig"; sourceTree = "<group>"; };
+		05BD72D1299290A000CF4FD7 /* Analysis-Policy.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Analysis-Policy.xcconfig"; sourceTree = "<group>"; };
+		05BD72D2299290A000CF4FD7 /* Deployment.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Deployment.xcconfig; sourceTree = "<group>"; };
+		05BD72D3299290A000CF4FD7 /* Build-Options.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Build-Options.xcconfig"; sourceTree = "<group>"; };
+		05BD72D4299290A000CF4FD7 /* Swift-Compiler.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Swift-Compiler.xcconfig"; sourceTree = "<group>"; };
+		05BD72D5299290A000CF4FD7 /* Static-Analyzer.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Static-Analyzer.xcconfig"; sourceTree = "<group>"; };
+		05BD72D7299290A000CF4FD7 /* Warnings-Policies.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Warnings-Policies.xcconfig"; sourceTree = "<group>"; };
+		05BD72D8299290A000CF4FD7 /* Code-Generation.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Code-Generation.xcconfig"; sourceTree = "<group>"; };
+		05BD72D9299290A000CF4FD7 /* Language.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Language.xcconfig; sourceTree = "<group>"; };
+		05BD72DA299290A000CF4FD7 /* General.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = General.xcconfig; sourceTree = "<group>"; };
+		05BD72DB299290A000CF4FD7 /* Search-Paths.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Search-Paths.xcconfig"; sourceTree = "<group>"; };
+		05BD72DC299290A000CF4FD7 /* Apple-LLVM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Apple-LLVM.xcconfig"; sourceTree = "<group>"; };
+		05BD72DF299290A000CF4FD7 /* Modules.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Modules.xcconfig; sourceTree = "<group>"; };
+		05BD72E0299290A000CF4FD7 /* Objective-C.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Objective-C.xcconfig"; sourceTree = "<group>"; };
+		05BD72E1299290A000CF4FD7 /* C++.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "C++.xcconfig"; sourceTree = "<group>"; };
+		05BD72E2299290A000CF4FD7 /* Code-Generation.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Code-Generation.xcconfig"; sourceTree = "<group>"; };
+		05BD72E3299290A000CF4FD7 /* Address-Sanitizer.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Address-Sanitizer.xcconfig"; sourceTree = "<group>"; };
+		05BD72E4299290A000CF4FD7 /* Language.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Language.xcconfig; sourceTree = "<group>"; };
+		05BD72E5299290A000CF4FD7 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
+		05BD72E6299290A000CF4FD7 /* Undefined-Behavior-Sanitizer.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Undefined-Behavior-Sanitizer.xcconfig"; sourceTree = "<group>"; };
+		05BD72E7299290A000CF4FD7 /* Warning-Policies.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Warning-Policies.xcconfig"; sourceTree = "<group>"; };
+		05BD72E9299290A000CF4FD7 /* Objective-C-ARC.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Objective-C-ARC.xcconfig"; sourceTree = "<group>"; };
+		05BD72EA299290A000CF4FD7 /* Objective-C.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Objective-C.xcconfig"; sourceTree = "<group>"; };
+		05BD72EB299290A000CF4FD7 /* C++.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "C++.xcconfig"; sourceTree = "<group>"; };
+		05BD72EC299290A000CF4FD7 /* All-Languages.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "All-Languages.xcconfig"; sourceTree = "<group>"; };
+		05BD72ED299290A000CF4FD7 /* Preprocessing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Preprocessing.xcconfig; sourceTree = "<group>"; };
+		05BD72EE299290A000CF4FD7 /* Debug - Library.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Debug - Library.xcconfig"; sourceTree = "<group>"; };
+		05BD72EF299290A000CF4FD7 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		05BD72F1299290A000CF4FD7 /* ccache-config.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "ccache-config.sh"; sourceTree = "<group>"; };
+		05BD72F2299290A000CF4FD7 /* ccache.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ccache.sh; sourceTree = "<group>"; };
+		05BD72F4299290A000CF4FD7 /* FUNDING.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = FUNDING.yml; sourceTree = "<group>"; };
+		05BD72F5299290A000CF4FD7 /* Debug - zld.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Debug - zld.xcconfig"; sourceTree = "<group>"; };
+		05BD73252992AF9A00CF4FD7 /* SensorsKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorsKit.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		05BD727F299275AB00CF4FD7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05BD7278299275AB00CF4FD7 = {
+			isa = PBXGroup;
+			children = (
+				05BD72BE299290A000CF4FD7 /* xcconfig */,
+				05BD7284299275AB00CF4FD7 /* SensorsKit */,
+				05BD7283299275AB00CF4FD7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		05BD7283299275AB00CF4FD7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				05BD7282299275AB00CF4FD7 /* SensorsKit.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		05BD7284299275AB00CF4FD7 /* SensorsKit */ = {
+			isa = PBXGroup;
+			children = (
+				05BD73252992AF9A00CF4FD7 /* SensorsKit.h */,
+			);
+			path = SensorsKit;
+			sourceTree = "<group>";
+		};
+		05BD72BE299290A000CF4FD7 /* xcconfig */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72BF299290A000CF4FD7 /* CODE_OF_CONDUCT.md */,
+				05BD72C0299290A000CF4FD7 /* Release - ccache.xcconfig */,
+				05BD72C1299290A000CF4FD7 /* Common.xcconfig */,
+				05BD72C2299290A000CF4FD7 /* Debug - ccache.xcconfig */,
+				05BD72C3299290A000CF4FD7 /* Debug.xcconfig */,
+				05BD72C4299290A000CF4FD7 /* Release.xcconfig */,
+				05BD72C5299290A000CF4FD7 /* README.md */,
+				05BD72C6299290A000CF4FD7 /* Release - Library.xcconfig */,
+				05BD72C7299290A000CF4FD7 /* Common */,
+				05BD72EE299290A000CF4FD7 /* Debug - Library.xcconfig */,
+				05BD72EF299290A000CF4FD7 /* .gitignore */,
+				05BD72F0299290A000CF4FD7 /* Scripts */,
+				05BD72F3299290A000CF4FD7 /* .github */,
+				05BD72F5299290A000CF4FD7 /* Debug - zld.xcconfig */,
+			);
+			name = xcconfig;
+			path = Submodules/xcconfig;
+			sourceTree = "<group>";
+		};
+		05BD72C7299290A000CF4FD7 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72C8299290A000CF4FD7 /* Signing.xcconfig */,
+				05BD72C9299290A000CF4FD7 /* Architectures.xcconfig */,
+				05BD72CA299290A000CF4FD7 /* Static-Analyzer */,
+				05BD72D2299290A000CF4FD7 /* Deployment.xcconfig */,
+				05BD72D3299290A000CF4FD7 /* Build-Options.xcconfig */,
+				05BD72D4299290A000CF4FD7 /* Swift-Compiler.xcconfig */,
+				05BD72D5299290A000CF4FD7 /* Static-Analyzer.xcconfig */,
+				05BD72D6299290A000CF4FD7 /* Swift-Compiler */,
+				05BD72DB299290A000CF4FD7 /* Search-Paths.xcconfig */,
+				05BD72DC299290A000CF4FD7 /* Apple-LLVM.xcconfig */,
+				05BD72DD299290A000CF4FD7 /* Apple-LLVM */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		05BD72CA299290A000CF4FD7 /* Static-Analyzer */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72CB299290A000CF4FD7 /* Issues.xcconfig */,
+				05BD72CC299290A000CF4FD7 /* Issues */,
+			);
+			path = "Static-Analyzer";
+			sourceTree = "<group>";
+		};
+		05BD72CC299290A000CF4FD7 /* Issues */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72CD299290A000CF4FD7 /* Apple-APIs.xcconfig */,
+				05BD72CE299290A000CF4FD7 /* Generic-Issues.xcconfig */,
+				05BD72CF299290A000CF4FD7 /* Security.xcconfig */,
+				05BD72D0299290A000CF4FD7 /* Objective-C.xcconfig */,
+				05BD72D1299290A000CF4FD7 /* Analysis-Policy.xcconfig */,
+			);
+			path = Issues;
+			sourceTree = "<group>";
+		};
+		05BD72D6299290A000CF4FD7 /* Swift-Compiler */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72D7299290A000CF4FD7 /* Warnings-Policies.xcconfig */,
+				05BD72D8299290A000CF4FD7 /* Code-Generation.xcconfig */,
+				05BD72D9299290A000CF4FD7 /* Language.xcconfig */,
+				05BD72DA299290A000CF4FD7 /* General.xcconfig */,
+			);
+			path = "Swift-Compiler";
+			sourceTree = "<group>";
+		};
+		05BD72DD299290A000CF4FD7 /* Apple-LLVM */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72DE299290A000CF4FD7 /* Language */,
+				05BD72E2299290A000CF4FD7 /* Code-Generation.xcconfig */,
+				05BD72E3299290A000CF4FD7 /* Address-Sanitizer.xcconfig */,
+				05BD72E4299290A000CF4FD7 /* Language.xcconfig */,
+				05BD72E5299290A000CF4FD7 /* Warnings.xcconfig */,
+				05BD72E6299290A000CF4FD7 /* Undefined-Behavior-Sanitizer.xcconfig */,
+				05BD72E7299290A000CF4FD7 /* Warning-Policies.xcconfig */,
+				05BD72E8299290A000CF4FD7 /* Warnings */,
+				05BD72ED299290A000CF4FD7 /* Preprocessing.xcconfig */,
+			);
+			path = "Apple-LLVM";
+			sourceTree = "<group>";
+		};
+		05BD72DE299290A000CF4FD7 /* Language */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72DF299290A000CF4FD7 /* Modules.xcconfig */,
+				05BD72E0299290A000CF4FD7 /* Objective-C.xcconfig */,
+				05BD72E1299290A000CF4FD7 /* C++.xcconfig */,
+			);
+			path = Language;
+			sourceTree = "<group>";
+		};
+		05BD72E8299290A000CF4FD7 /* Warnings */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72E9299290A000CF4FD7 /* Objective-C-ARC.xcconfig */,
+				05BD72EA299290A000CF4FD7 /* Objective-C.xcconfig */,
+				05BD72EB299290A000CF4FD7 /* C++.xcconfig */,
+				05BD72EC299290A000CF4FD7 /* All-Languages.xcconfig */,
+			);
+			path = Warnings;
+			sourceTree = "<group>";
+		};
+		05BD72F0299290A000CF4FD7 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72F1299290A000CF4FD7 /* ccache-config.sh */,
+				05BD72F2299290A000CF4FD7 /* ccache.sh */,
+			);
+			path = Scripts;
+			sourceTree = "<group>";
+		};
+		05BD72F3299290A000CF4FD7 /* .github */ = {
+			isa = PBXGroup;
+			children = (
+				05BD72F4299290A000CF4FD7 /* FUNDING.yml */,
+			);
+			path = .github;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		05BD727D299275AB00CF4FD7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05BD73262992AF9A00CF4FD7 /* SensorsKit.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		05BD7281299275AB00CF4FD7 /* SensorsKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05BD7289299275AB00CF4FD7 /* Build configuration list for PBXNativeTarget "SensorsKit" */;
+			buildPhases = (
+				05BD727D299275AB00CF4FD7 /* Headers */,
+				05BD727E299275AB00CF4FD7 /* Sources */,
+				05BD727F299275AB00CF4FD7 /* Frameworks */,
+				05BD7280299275AB00CF4FD7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SensorsKit;
+			productName = IOHIDKit;
+			productReference = 05BD7282299275AB00CF4FD7 /* SensorsKit.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		05BD7279299275AB00CF4FD7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					05BD7281299275AB00CF4FD7 = {
+						CreatedOnToolsVersion = 14.2;
+						LastSwiftMigration = 1420;
+					};
+				};
+			};
+			buildConfigurationList = 05BD727C299275AB00CF4FD7 /* Build configuration list for PBXProject "SensorsKit" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 05BD7278299275AB00CF4FD7;
+			productRefGroup = 05BD7283299275AB00CF4FD7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				05BD7281299275AB00CF4FD7 /* SensorsKit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		05BD7280299275AB00CF4FD7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		05BD727E299275AB00CF4FD7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		05BD7287299275AB00CF4FD7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 05BD72EE299290A000CF4FD7 /* Debug - Library.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 326Y53CJMD;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+			};
+			name = Debug;
+		};
+		05BD7288299275AB00CF4FD7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 05BD72C6299290A000CF4FD7 /* Release - Library.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 326Y53CJMD;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+			};
+			name = Release;
+		};
+		05BD728A299275AB00CF4FD7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 XS-Labs. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xs-labs.SensorsKit";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		05BD728B299275AB00CF4FD7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 XS-Labs. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xs-labs.SensorsKit";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		05BD727C299275AB00CF4FD7 /* Build configuration list for PBXProject "SensorsKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05BD7287299275AB00CF4FD7 /* Debug */,
+				05BD7288299275AB00CF4FD7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05BD7289299275AB00CF4FD7 /* Build configuration list for PBXNativeTarget "SensorsKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05BD728A299275AB00CF4FD7 /* Debug */,
+				05BD728B299275AB00CF4FD7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 05BD7279299275AB00CF4FD7 /* Project object */;
+}
