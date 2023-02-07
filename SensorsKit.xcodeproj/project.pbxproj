@@ -8,7 +8,57 @@
 
 /* Begin PBXBuildFile section */
 		05BD73262992AF9A00CF4FD7 /* SensorsKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 05BD73252992AF9A00CF4FD7 /* SensorsKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		05BD73522992CA7300CF4FD7 /* IOHIDKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05BD73462992CA5A00CF4FD7 /* IOHIDKit.framework */; };
+		05BD73532992CA7300CF4FD7 /* IOHIDKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 05BD73462992CA5A00CF4FD7 /* IOHIDKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		05BD73542992CA7300CF4FD7 /* SMCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05BD734C2992CA5F00CF4FD7 /* SMCKit.framework */; };
+		05BD73552992CA7300CF4FD7 /* SMCKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 05BD734C2992CA5F00CF4FD7 /* SMCKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		05BD73452992CA5A00CF4FD7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05BD7282299275AB00CF4FD7;
+			remoteInfo = IOHIDKit;
+		};
+		05BD734B2992CA5F00CF4FD7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05BD7282299275AB00CF4FD7;
+			remoteInfo = SMCKit;
+		};
+		05BD734D2992CA6600CF4FD7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 05BD7281299275AB00CF4FD7;
+			remoteInfo = SMCKit;
+		};
+		05BD734F2992CA6800CF4FD7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 05BD7281299275AB00CF4FD7;
+			remoteInfo = IOHIDKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		05BD73562992CA7300CF4FD7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				05BD73552992CA7300CF4FD7 /* SMCKit.framework in Embed Frameworks */,
+				05BD73532992CA7300CF4FD7 /* IOHIDKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		05BD7282299275AB00CF4FD7 /* SensorsKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SensorsKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -59,6 +109,8 @@
 		05BD72F4299290A000CF4FD7 /* FUNDING.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = FUNDING.yml; sourceTree = "<group>"; };
 		05BD72F5299290A000CF4FD7 /* Debug - zld.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Debug - zld.xcconfig"; sourceTree = "<group>"; };
 		05BD73252992AF9A00CF4FD7 /* SensorsKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorsKit.h; sourceTree = "<group>"; };
+		05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = IOHIDKit.xcodeproj; path = Submodules/IOHIDKit/IOHIDKit.xcodeproj; sourceTree = "<group>"; };
+		05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMCKit.xcodeproj; path = Submodules/SMCKit/SMCKit.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +118,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05BD73542992CA7300CF4FD7 /* SMCKit.framework in Frameworks */,
+				05BD73522992CA7300CF4FD7 /* IOHIDKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +129,12 @@
 		05BD7278299275AB00CF4FD7 = {
 			isa = PBXGroup;
 			children = (
+				05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */,
+				05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */,
 				05BD72BE299290A000CF4FD7 /* xcconfig */,
 				05BD7284299275AB00CF4FD7 /* SensorsKit */,
 				05BD7283299275AB00CF4FD7 /* Products */,
+				05BD73512992CA7300CF4FD7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -223,6 +280,29 @@
 			path = .github;
 			sourceTree = "<group>";
 		};
+		05BD73422992CA5A00CF4FD7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				05BD73462992CA5A00CF4FD7 /* IOHIDKit.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		05BD73482992CA5E00CF4FD7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				05BD734C2992CA5F00CF4FD7 /* SMCKit.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		05BD73512992CA7300CF4FD7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -245,10 +325,13 @@
 				05BD727E299275AB00CF4FD7 /* Sources */,
 				05BD727F299275AB00CF4FD7 /* Frameworks */,
 				05BD7280299275AB00CF4FD7 /* Resources */,
+				05BD73562992CA7300CF4FD7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				05BD73502992CA6800CF4FD7 /* PBXTargetDependency */,
+				05BD734E2992CA6600CF4FD7 /* PBXTargetDependency */,
 			);
 			name = SensorsKit;
 			productName = IOHIDKit;
@@ -281,12 +364,39 @@
 			mainGroup = 05BD7278299275AB00CF4FD7;
 			productRefGroup = 05BD7283299275AB00CF4FD7 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 05BD73422992CA5A00CF4FD7 /* Products */;
+					ProjectRef = 05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */;
+				},
+				{
+					ProductGroup = 05BD73482992CA5E00CF4FD7 /* Products */;
+					ProjectRef = 05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				05BD7281299275AB00CF4FD7 /* SensorsKit */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		05BD73462992CA5A00CF4FD7 /* IOHIDKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = IOHIDKit.framework;
+			remoteRef = 05BD73452992CA5A00CF4FD7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		05BD734C2992CA5F00CF4FD7 /* SMCKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SMCKit.framework;
+			remoteRef = 05BD734B2992CA5F00CF4FD7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		05BD7280299275AB00CF4FD7 /* Resources */ = {
@@ -307,6 +417,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		05BD734E2992CA6600CF4FD7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SMCKit;
+			targetProxy = 05BD734D2992CA6600CF4FD7 /* PBXContainerItemProxy */;
+		};
+		05BD73502992CA6800CF4FD7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = IOHIDKit;
+			targetProxy = 05BD734F2992CA6800CF4FD7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		05BD7287299275AB00CF4FD7 /* Debug */ = {
