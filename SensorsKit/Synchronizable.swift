@@ -22,3 +22,36 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
+import Foundation
+
+public protocol Synchronizable
+{
+    static func synchronized< T >( closure: () -> T ) -> T
+
+    func synchronized< T >( closure: () -> T ) -> T
+}
+
+public extension Synchronizable
+{
+    static func synchronized< T >( closure: () -> T ) -> T
+    {
+        objc_sync_enter( self )
+
+        let r = closure()
+
+        objc_sync_exit( self )
+
+        return r
+    }
+
+    func synchronized< T >( closure: () -> T ) -> T
+    {
+        objc_sync_enter( self )
+
+        let r = closure()
+
+        objc_sync_exit( self )
+
+        return r
+    }
+}
