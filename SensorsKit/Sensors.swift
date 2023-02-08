@@ -99,9 +99,10 @@ public class Sensors: NSObject
 
     private func readIOHIDSensors()
     {
-        IOHID.shared.readTemperatureSensors().forEach { self.addSensorHistoryData( data: $0, kind: .thermal ) }
-        IOHID.shared.readVoltageSensors().forEach     { self.addSensorHistoryData( data: $0, kind: .voltage ) }
-        IOHID.shared.readCurrentSensors().forEach     { self.addSensorHistoryData( data: $0, kind: .current ) }
+        IOHID.shared.readTemperatureSensors().forEach  { self.addSensorHistoryData( data: $0, kind: .thermal ) }
+        IOHID.shared.readVoltageSensors().forEach      { self.addSensorHistoryData( data: $0, kind: .voltage ) }
+        IOHID.shared.readCurrentSensors().forEach      { self.addSensorHistoryData( data: $0, kind: .current ) }
+        IOHID.shared.readAmbiantLightSensors().forEach { self.addSensorHistoryData( data: $0, kind: .ambiantLight ) }
     }
 
     private func readSMCSensors()
