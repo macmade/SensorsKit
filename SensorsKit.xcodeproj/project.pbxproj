@@ -15,6 +15,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		058B8E3C299432F100263FE9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05BD736A2992D23800CF4FD7;
+			remoteInfo = SMC;
+		};
+		058B8E3E299432F100263FE9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05BD73802992D35900CF4FD7;
+			remoteInfo = "smc-dump";
+		};
 		05BD73452992CA5A00CF4FD7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */;
@@ -61,6 +75,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		058B8E39299432F100263FE9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		058B8E40299432F100263FE9 /* CODE_OF_CONDUCT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CODE_OF_CONDUCT.md; sourceTree = "<group>"; };
+		058B8E41299432F100263FE9 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		05BD7282299275AB00CF4FD7 /* SensorsKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SensorsKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		05BD72BF299290A000CF4FD7 /* CODE_OF_CONDUCT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CODE_OF_CONDUCT.md; sourceTree = "<group>"; };
 		05BD72C0299290A000CF4FD7 /* Release - ccache.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Release - ccache.xcconfig"; sourceTree = "<group>"; };
@@ -129,6 +146,9 @@
 		05BD7278299275AB00CF4FD7 = {
 			isa = PBXGroup;
 			children = (
+				058B8E40299432F100263FE9 /* CODE_OF_CONDUCT.md */,
+				058B8E41299432F100263FE9 /* LICENSE */,
+				058B8E39299432F100263FE9 /* README.md */,
 				05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */,
 				05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */,
 				05BD72BE299290A000CF4FD7 /* xcconfig */,
@@ -292,6 +312,8 @@
 			isa = PBXGroup;
 			children = (
 				05BD734C2992CA5F00CF4FD7 /* SMCKit.framework */,
+				058B8E3D299432F100263FE9 /* libSMC.a */,
+				058B8E3F299432F100263FE9 /* smc-dump */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -382,6 +404,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		058B8E3D299432F100263FE9 /* libSMC.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSMC.a;
+			remoteRef = 058B8E3C299432F100263FE9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		058B8E3F299432F100263FE9 /* smc-dump */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "smc-dump";
+			remoteRef = 058B8E3E299432F100263FE9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		05BD73462992CA5A00CF4FD7 /* IOHIDKit.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
