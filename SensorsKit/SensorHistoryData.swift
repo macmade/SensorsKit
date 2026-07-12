@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2023, Jean-David Gadina - www.xs-labs.com
+ * Copyright (c) 2026, Jean-David Gadina - www.xs-labs.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the Software), to deal
@@ -24,17 +24,33 @@
 
 import Foundation
 
+/// Stores a rolling history of readings for a single hardware sensor.
+///
+/// An instance keeps the most recent samples (capped at 50) reported by a
+/// sensor and exposes derived, key-value-observable statistics such as the
+/// minimum, maximum and last recorded value. Access to the underlying sample
+/// buffer is serialized through ``Synchronizable`` so values can be added from
+/// a background queue while observers read from the main queue.
 @objc
 public class SensorHistoryData: NSObject, Synchronizable
 {
+    /// The physical quantity measured by a sensor.
     @objc( SensorHistoryDataKind )
     public enum Kind: Int, CustomStringConvertible
     {
+        /// A temperature reading.
         case thermal
-        case voltage
-        case current
-        case ambiantLight
 
+        /// A voltage reading.
+        case voltage
+
+        /// An electrical current reading.
+        case current
+
+        /// An ambient light reading.
+        case ambientLight
+
+        /// A lowercase, human-readable name for the kind.
         public var description: String
         {
             switch self
@@ -42,17 +58,22 @@ public class SensorHistoryData: NSObject, Synchronizable
                 case .thermal:      return "thermal"
                 case .voltage:      return "voltage"
                 case .current:      return "current"
-                case .ambiantLight: return "ambiantLight"
+                case .ambientLight: return "ambientLight"
             }
         }
     }
 
+    /// The subsystem a sensor reading originates from.
     @objc( SensorHistoryDataSource )
     public enum Source: Int, CustomStringConvertible
     {
+        /// The IOHID subsystem.
         case hid
+
+        /// The System Management Controller (SMC).
         case smc
 
+        /// A human-readable name for the source.
         public var description: String
         {
             switch self
@@ -63,12 +84,21 @@ public class SensorHistoryData: NSObject, Synchronizable
         }
     }
 
+    /// The subsystem the sensor readings originate from.
     @objc public private( set ) dynamic var source: Source
-    @objc public private( set ) dynamic var kind:   Kind
-    @objc public private( set ) dynamic var name:   String
 
+    /// The physical quantity the sensor measures.
+    @objc public private( set ) dynamic var kind: Kind
+
+    /// The name identifying the sensor.
+    @objc public private( set ) dynamic var name: String
+
+    /// The recorded samples, kept as a rolling window of the 50 most recent
+    /// values. Always accessed inside a ``synchronized(closure:)`` block.
     private var data: [ Double ] = []
 
+    /// The recorded samples, boxed as `NSNumber` values for Objective-C and
+    /// key-value observing interoperability.
     @objc public dynamic var values: [ NSNumber ]
     {
         return self.synchronized
@@ -77,6 +107,8 @@ public class SensorHistoryData: NSObject, Synchronizable
         }
     }
 
+    /// The smallest recorded value, or `nil` when no sample has been recorded
+    /// yet.
     @objc public dynamic var min: NSNumber?
     {
         return self.synchronized
@@ -91,6 +123,8 @@ public class SensorHistoryData: NSObject, Synchronizable
         }
     }
 
+    /// The largest recorded value, or `nil` when no sample has been recorded
+    /// yet.
     @objc public dynamic var max: NSNumber?
     {
         return self.synchronized
@@ -105,6 +139,8 @@ public class SensorHistoryData: NSObject, Synchronizable
         }
     }
 
+    /// The most recently recorded value, or `nil` when no sample has been
+    /// recorded yet.
     @objc public dynamic var last: NSNumber?
     {
         return self.synchronized
@@ -119,6 +155,12 @@ public class SensorHistoryData: NSObject, Synchronizable
         }
     }
 
+    /// Creates a history container for a sensor.
+    ///
+    /// - Parameters:
+    ///   - source: The subsystem the readings originate from.
+    ///   - kind:   The physical quantity the sensor measures.
+    ///   - name:   The name identifying the sensor.
     @objc
     public init( source: Source, kind: Kind, name: String )
     {
@@ -127,6 +169,14 @@ public class SensorHistoryData: NSObject, Synchronizable
         self.name   = name
     }
 
+    /// Records a new sample.
+    ///
+    /// The value is appended to the history, which is then trimmed to its 50
+    /// most recent samples. Key-value-observing change notifications for the
+    /// derived ``values``, ``min``, ``max`` and ``last`` properties are posted
+    /// asynchronously on the main queue.
+    ///
+    /// - Parameter value: The value to record.
     @objc( addValue: )
     public func add( value: Double )
     {
@@ -153,6 +203,8 @@ public class SensorHistoryData: NSObject, Synchronizable
         }
     }
 
+    /// A textual description including the sensor name, kind and the current
+    /// minimum and maximum recorded values.
     public override var description: String
     {
         let min = String( format: "%.2f", self.min?.doubleValue ?? 0 )
