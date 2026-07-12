@@ -14,6 +14,11 @@
 		05BD73532992CA7300CF4FD7 /* IOHIDKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 05BD73462992CA5A00CF4FD7 /* IOHIDKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		05BD73542992CA7300CF4FD7 /* SMCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05BD734C2992CA5F00CF4FD7 /* SMCKit.framework */; };
 		05BD73552992CA7300CF4FD7 /* SMCKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 05BD734C2992CA5F00CF4FD7 /* SMCKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2F924F024D1E3C838B4A477D /* SynchronizableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA09BF05664E46A44D2E9F60 /* SynchronizableTests.swift */; };
+		3ED816061048296F851B998C /* SensorsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FBB754202A8F54E2E6E11E3 /* SensorsTests.swift */; };
+		4A353EEA288E6AEAA058BFBC /* SensorHistoryDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 202E497E0ACF82340DBA023C /* SensorHistoryDataTests.swift */; };
+		901FFE41E1CB11CCF0C50D77 /* SensorsKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05BD7282299275AB00CF4FD7 /* SensorsKit.framework */; };
+		DF8167066B5F0D2377FF9F25 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E12DE6871D51BBE90C76D45 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +63,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 05BD7281299275AB00CF4FD7;
 			remoteInfo = IOHIDKit;
+		};
+		C9CB288460C51CBC260F9FC1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD7279299275AB00CF4FD7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 05BD7281299275AB00CF4FD7;
+			remoteInfo = SensorsKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -132,6 +144,11 @@
 		05BD72F5299290A000CF4FD7 /* Debug - zld.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Debug - zld.xcconfig"; sourceTree = "<group>"; };
 		05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = IOHIDKit.xcodeproj; path = Submodules/IOHIDKit/IOHIDKit.xcodeproj; sourceTree = "<group>"; };
 		05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMCKit.xcodeproj; path = Submodules/SMCKit/SMCKit.xcodeproj; sourceTree = "<group>"; };
+		1E12DE6871D51BBE90C76D45 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		202E497E0ACF82340DBA023C /* SensorHistoryDataTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SensorHistoryDataTests.swift; sourceTree = "<group>"; };
+		2FBB754202A8F54E2E6E11E3 /* SensorsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SensorsTests.swift; sourceTree = "<group>"; };
+		4D2FB22BA770D9C8EE0B9425 /* SensorsKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SensorsKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA09BF05664E46A44D2E9F60 /* SynchronizableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SynchronizableTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +158,15 @@
 			files = (
 				05BD73542992CA7300CF4FD7 /* SMCKit.framework in Frameworks */,
 				05BD73522992CA7300CF4FD7 /* IOHIDKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		340AA1DC59D5EBC6A357191F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DF8167066B5F0D2377FF9F25 /* Cocoa.framework in Frameworks */,
+				901FFE41E1CB11CCF0C50D77 /* SensorsKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,6 +185,7 @@
 				05BD7284299275AB00CF4FD7 /* SensorsKit */,
 				05BD7283299275AB00CF4FD7 /* Products */,
 				05BD73512992CA7300CF4FD7 /* Frameworks */,
+				2E5E274906DA5C62EC7206AC /* SensorsKitTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -166,6 +193,7 @@
 			isa = PBXGroup;
 			children = (
 				05BD7282299275AB00CF4FD7 /* SensorsKit.framework */,
+				4D2FB22BA770D9C8EE0B9425 /* SensorsKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -327,8 +355,28 @@
 		05BD73512992CA7300CF4FD7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				77F1FF225C1F0BE2BAD42054 /* OS X */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2E5E274906DA5C62EC7206AC /* SensorsKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				202E497E0ACF82340DBA023C /* SensorHistoryDataTests.swift */,
+				FA09BF05664E46A44D2E9F60 /* SynchronizableTests.swift */,
+				2FBB754202A8F54E2E6E11E3 /* SensorsTests.swift */,
+			);
+			name = SensorsKitTests;
+			path = SensorsKitTests;
+			sourceTree = "<group>";
+		};
+		77F1FF225C1F0BE2BAD42054 /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				1E12DE6871D51BBE90C76D45 /* Cocoa.framework */,
+			);
+			name = "OS X";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -364,6 +412,24 @@
 			productName = IOHIDKit;
 			productReference = 05BD7282299275AB00CF4FD7 /* SensorsKit.framework */;
 			productType = "com.apple.product-type.framework";
+		};
+		109DBA20EBD7BC7BBC0D1359 /* SensorsKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F2203253DA8618898B132FEB /* Build configuration list for PBXNativeTarget "SensorsKitTests" */;
+			buildPhases = (
+				0ADF9D986740DF1F6A300A94 /* Sources */,
+				340AA1DC59D5EBC6A357191F /* Frameworks */,
+				1B9615D75C3639B01703ADAB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9873F933D75DDD6CB7640FBA /* PBXTargetDependency */,
+			);
+			name = SensorsKitTests;
+			productName = SensorsKitTests;
+			productReference = 4D2FB22BA770D9C8EE0B9425 /* SensorsKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -404,6 +470,7 @@
 			projectRoot = "";
 			targets = (
 				05BD7281299275AB00CF4FD7 /* SensorsKit */,
+				109DBA20EBD7BC7BBC0D1359 /* SensorsKitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -447,6 +514,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1B9615D75C3639B01703ADAB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -457,6 +531,16 @@
 				058B8E46299433FD00263FE9 /* Synchronizable.swift in Sources */,
 				058B8E44299433C800263FE9 /* SensorHistoryData.swift in Sources */,
 				058B8E482994341000263FE9 /* Sensors.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0ADF9D986740DF1F6A300A94 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4A353EEA288E6AEAA058BFBC /* SensorHistoryDataTests.swift in Sources */,
+				2F924F024D1E3C838B4A477D /* SynchronizableTests.swift in Sources */,
+				3ED816061048296F851B998C /* SensorsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -472,6 +556,12 @@
 			isa = PBXTargetDependency;
 			name = IOHIDKit;
 			targetProxy = 05BD734F2992CA6800CF4FD7 /* PBXContainerItemProxy */;
+		};
+		9873F933D75DDD6CB7640FBA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SensorsKit;
+			target = 05BD7281299275AB00CF4FD7 /* SensorsKit */;
+			targetProxy = C9CB288460C51CBC260F9FC1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -547,6 +637,45 @@
 			};
 			name = Release;
 		};
+		BD66C62C3EF916CF0D951BEA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 326Y53CJMD;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xs-labs.SensorsKitTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D04A8EF786AEA30C49719F07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 326Y53CJMD;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xs-labs.SensorsKitTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -564,6 +693,15 @@
 			buildConfigurations = (
 				05BD728A299275AB00CF4FD7 /* Debug */,
 				05BD728B299275AB00CF4FD7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F2203253DA8618898B132FEB /* Build configuration list for PBXNativeTarget "SensorsKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD66C62C3EF916CF0D951BEA /* Release */,
+				D04A8EF786AEA30C49719F07 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
