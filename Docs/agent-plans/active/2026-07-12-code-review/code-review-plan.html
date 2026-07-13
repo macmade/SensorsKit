@@ -350,7 +350,7 @@
 <!-- MILESTONE 4 -->
 <div class="milestone">
     <div class="milestone-head">
-        <span class="pill status-notstarted">Not started</span>
+        <span class="pill status-completed">Completed</span>
         <h3>M4 — <code>Synchronizable</code>: release the lock via <code>defer</code></h3>
     </div>
     <div class="tags"><span class="sev sev-info">Info 2</span></div>
@@ -369,14 +369,25 @@
         <li>Build &amp; test via <code>xcodebuild</code> (Debug + Release).</li>
     </ul>
 
-    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
-    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-completed">Completed</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; 2026-07-13</div>
     <div class="field"><span class="label">Implementation notes</span></div>
-    <p class="placeholder">To be filled in during implementation.</p>
+    <ul>
+        <li><strong>Info 2:</strong> in both the <code>static</code> and instance default implementations, the release was moved to a <code>defer { objc_sync_exit( self ) }</code> placed immediately after <code>objc_sync_enter( self )</code>, and the closure result is returned directly (<code>return closure()</code>) instead of via a temporary.</li>
+        <li><strong>Behavior preserved.</strong> A <code>defer</code> block runs after the <code>return</code> expression is fully evaluated, so the ordering is unchanged: acquire → run <code>closure()</code> inside the lock → capture the value → release → return it. Exactly one <code>enter</code>/<code>exit</code> pair per path, on the same token (metatype for <code>static</code>, instance for the instance method). The unlock is now unconditional, so a future throwing/early-exit variant could not leak the lock — the point of the change.</li>
+        <li><strong>No behavior change</strong>, so no new test was warranted; the existing suite guards it — return-value passthrough (both overloads), closure execution, and the 10k-iteration concurrent-serialization test (which would fail or deadlock if <code>defer</code> released too early or not at all).</li>
+        <li><strong>Verification:</strong> Debug <code>xcodebuild test</code> → 21/21 pass (incl. the 10k concurrency check); Release <code>xcodebuild build</code> → <code>BUILD SUCCEEDED</code>.</li>
+        <li><strong>Automated review loop:</strong> 1 round; converged with no Critical/High/Medium findings.</li>
+    </ul>
     <div class="field"><span class="label">Automated review</span></div>
-    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <p>Round 1 (fresh-context reviewer) — converged, no Critical/High/Medium findings. It verified semantic equivalence (the <code>defer</code> runs after the <code>return</code> expression is evaluated, so the closure still executes inside the lock), single <code>enter</code>/<code>exit</code> pairing on the correct token on every path, unchanged reentrancy, and conforming style/docs. Findings:</p>
+    <ul>
+        <li><span class="sev sev-low">Low</span> <strong>Static-overload test symmetry gap</strong> — the concurrency and closure-execution tests exercise only the <em>instance</em> overload; the <code>static</code> overload is covered for return value but not mutual exclusion. The two implementations are structurally identical, so risk is low, and the gap pre-dates M4 (not introduced by this change). <em>Resolution: Deferred</em> — surfaced to the owner as optional symmetric coverage.</li>
+    </ul>
     <div class="field"><span class="label">Review comments</span></div>
-    <p class="placeholder">Human review feedback to be recorded here.</p>
+    <ul>
+        <li><strong>Approved</strong> — "Looks good." No changes requested; the deferred static-overload test-symmetry gap was left as-is.</li>
+    </ul>
 </div>
 
 <!-- MILESTONE 5 -->

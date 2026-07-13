@@ -61,11 +61,12 @@ public extension Synchronizable
     {
         objc_sync_enter( self )
 
-        let r = closure()
+        defer
+        {
+            objc_sync_exit( self )
+        }
 
-        objc_sync_exit( self )
-
-        return r
+        return closure()
     }
 
     /// Runs a closure while holding the lock associated with the conforming
@@ -77,10 +78,11 @@ public extension Synchronizable
     {
         objc_sync_enter( self )
 
-        let r = closure()
+        defer
+        {
+            objc_sync_exit( self )
+        }
 
-        objc_sync_exit( self )
-
-        return r
+        return closure()
     }
 }
