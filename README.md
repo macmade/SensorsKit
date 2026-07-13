@@ -10,7 +10,18 @@ SensorsKit
 
 ### About
 
-SensorsKit is a macOS framework providing read access to hardware sensors via the SMC and IOHID prvate APIs.
+SensorsKit is a macOS framework providing read access to hardware sensors via the SMC and IOHID private APIs.
+
+### Features
+
+  - Reads sensors from two subsystems: **IOHID** and the **System Management Controller (SMC)**.
+  - Reports four kinds of readings: **temperature**, **voltage**, **current** and **ambient light**.
+  - Polls every sensor once per second on a dedicated background thread.
+  - Keeps a rolling history of the 50 most recent samples per sensor, with derived **min**, **max** and **last** values.
+  - Publishes results through key-value-observable properties on the main queue, ready to bind to a UI.
+  - Fully Objective-C interoperable.
+
+> **Note:** SMC readings are classified by their key-name prefix (`T`, `V`, `I`), which is a best-effort heuristic — some values may be mislabeled and some sensors omitted.
 
 License
 -------
