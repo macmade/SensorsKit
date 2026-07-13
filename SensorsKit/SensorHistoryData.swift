@@ -50,12 +50,16 @@ public class SensorHistoryData: NSObject, Synchronizable
         /// An ambient light reading.
         case ambientLight
 
+        /// A fan speed reading.
+        case rpm
+
         /// A lowercase, human-readable name for the kind.
         public var description: String
         {
             switch self
             {
                 case .thermal:      return "thermal"
+                case .rpm:          return "rpm"
                 case .voltage:      return "voltage"
                 case .current:      return "current"
                 case .ambientLight: return "ambientLight"
