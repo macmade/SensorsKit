@@ -228,7 +228,7 @@
 <!-- MILESTONE 2 -->
 <div class="milestone">
     <div class="milestone-head">
-        <span class="pill status-notstarted">Not started</span>
+        <span class="pill status-completed">Completed</span>
         <h3>M2 — Polling loop lifecycle &amp; threading rework</h3>
     </div>
     <div class="tags">
@@ -264,14 +264,35 @@
         <li>Build &amp; test via <code>xcodebuild</code> (Debug + Release); keep the xcodeproj/tests in sync.</li>
     </ul>
 
-    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
-    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-completed">Completed</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; 2026-07-13</div>
     <div class="field"><span class="label">Implementation notes</span></div>
-    <p class="placeholder">To be filled in during implementation. Note carefully the ordering of run-loop teardown vs. <code>deinit</code>, and confirm no retain cycle remains via the timer.</p>
+    <ul>
+        <li><strong>Mechanism (agreed with the owner):</strong> "Option A" — keep a run loop + <code>Timer</code>, but on a <strong>dedicated <code>Thread</code></strong>. Discussed the trade-offs against an <code>NSCondition</code>-based wait ("Option B"); the owner chose Option A to keep the <code>Timer</code>-driven fixed-rate cadence.</li>
+        <li><strong>Verified the run-loop primitives empirically before implementing</strong> (small standalone programs): with <code>returnAfterSourceHandled = false</code>, timer fires do <em>not</em> return <code>CFRunLoopRunInMode</code> (only stop/timeout does); <code>CFRunLoopStop</code> from another thread wakes a blocked run <em>immediately</em>; and a <code>CFRunLoopStop</code> issued <em>before</em> the run call is <em>lost</em> (does not persist).</li>
+        <li><strong>No self-retention (Medium 2):</strong> <code>init</code> spawns a dedicated <code>Thread</code> whose block captures <code>[weak self]</code>, and the polling loop lives <em>inline in the block</em> (not behind a single <code>self.run()</code> call, which would hold a strong <code>self</code> across the whole loop). The <code>Timer</code> closure also captures <code>[weak self]</code>. So no strong <code>self</code> is held across the blocking <code>CFRunLoopRunInMode</code>, and the object can deallocate while the thread is blocked.</li>
+        <li><strong>Deinit teardown (Medium 2):</strong> <code>deinit</code> drains pending completions (idempotently), clears <code>shouldRun</code>, wakes the run loop, and invokes the completions. No escaping closure in the <code>deinit</code> path captures <code>self</code> (the <code>DispatchQueue.main.async { self.data = [] }</code> is confined to the running-loop path, never <code>deinit</code>).</li>
+        <li><strong>Prompt stop (Low 1):</strong> <code>stop()</code>/<code>deinit</code> call <code>CFRunLoopStop</code> for the instant common-case wake, backed by a finite <code>pollInterval</code> (1&nbsp;s) limit on <code>CFRunLoopRunInMode</code> so a lost pre-run stop can delay teardown by at most one interval instead of hanging.</li>
+        <li><strong>Dedicated thread (Low 1):</strong> a <code>Thread</code> owns the run loop for the object's lifetime instead of borrowing a pooled <code>DispatchQueue.global()</code> worker. QoS restored to <code>.background</code> to match the original priority (see Automated review).</li>
+        <li><strong>Single timer add (Low 3):</strong> the timer is created with <code>Timer(timeInterval:repeats:)</code> and added once via <code>RunLoop.add(_:forMode:)</code> — the redundant second <code>add</code> is gone.</li>
+        <li><strong>Completion on repeat stop (Low 5):</strong> completions are queued in an array and drained exactly once via a <code>stopped</code> flag; a <code>stop()</code> after the loop has ended invokes its completion immediately. So a second <code>stop()</code> no longer silently discards its completion.</li>
+        <li><strong>Thread-safety:</strong> <code>Sensors</code> now conforms to <code>Synchronizable</code>; <code>shouldRun</code>/<code>stopped</code>/<code>completions</code>/<code>runLoop</code> are only touched inside <code>synchronized</code>. Completions are always invoked <em>outside</em> the lock to avoid re-entrancy deadlock.</li>
+        <li><strong>TDD:</strong> wrote the lifecycle tests first — <code>secondStopStillInvokesCompletion</code> (hung under the old code), <code>deallocatesWhenReleasedWithoutStop</code> (weak ref never cleared under the old code), and a promptness test — watched them fail, then implemented. Discovered that stop latency is bounded by the in-flight <code>readSensors()</code> pass (<code>SMC.readAllKeys()</code> ≈ 0.92&nbsp;s for ~1980 keys, so a full pass ≈ 1–2&nbsp;s), which is hardware-dependent; replaced the flaky wall-clock <code>stopIsPrompt</code> with a <em>deterministic</em> <code>repeatStopCompletesPromptly</code> that bounds only the already-stopped immediate path.</li>
+        <li><strong>Verification:</strong> Debug <code>xcodebuild test</code> → 20/20 pass, stable across repeated runs; Release <code>xcodebuild build</code> → <code>BUILD SUCCEEDED</code>.</li>
+        <li><strong>Automated review loop:</strong> 1 round; converged with no Critical/High/Medium findings.</li>
+    </ul>
     <div class="field"><span class="label">Automated review</span></div>
-    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <p>Round 1 (fresh-context reviewer, built &amp; ran the suite) — converged, no Critical/High/Medium findings. It independently verified the no-strong-self invariant (the dealloc test passes in a <code>-Onone</code> Debug build), <code>deinit</code> safety, exactly-once/never-dropped completions, the startup and lost-wake races, the run-loop mode match, and the absence of API/KVO regressions. Findings:</p>
+    <ul>
+        <li><span class="sev sev-low">Low</span> <strong>Polling thread QoS regression</strong> — the new <code>Thread</code> defaulted to <code>.default</code> QoS whereas the old code used <code>DispatchQueue.global(qos: .background)</code>. <em>Resolution: Fixed</em> — set <code>thread.qualityOfService = .background</code>.</li>
+        <li><span class="sev sev-info">Info</span> <strong>Completion-vs-<code>data</code>-clear ordering doc</strong> — the <code>stop()</code> doc implied <code>data</code> is cleared before the completion runs, but the clear is async on main. <em>Resolution: Fixed</em> — reworded the doc.</li>
+        <li><span class="sev sev-info">Info</span> <strong>Completion thread unspecified</strong> — completions run on the polling thread or the releasing thread. <em>Resolution: Fixed</em> — documented that the completion may run on an arbitrary thread.</li>
+        <li><span class="sev sev-info">Info</span> <strong><code>CallCounter</code> second type in the test file</strong> — a small, correct test helper co-located with the suite; reviewer deemed it an acceptable exception to one-type-per-file. <em>Resolution: Deferred.</em></li>
+    </ul>
     <div class="field"><span class="label">Review comments</span></div>
-    <p class="placeholder">Human review feedback to be recorded here.</p>
+    <ul>
+        <li><strong>Approved</strong> — "Looks good." No changes requested; the deferred <code>CallCounter</code> placement was left as-is.</li>
+    </ul>
 </div>
 
 <!-- MILESTONE 3 -->

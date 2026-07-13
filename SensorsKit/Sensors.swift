@@ -29,14 +29,24 @@ import SMCKit
 /// Periodically polls the machine's hardware sensors and maintains an
 /// observable history of their readings.
 ///
-/// On initialization the object starts a background run loop that samples the
-/// IOHID and SMC sensors once per second. Each sample is accumulated into a
-/// ``SensorHistoryData`` instance, and the aggregated list is republished on
-/// the main queue through the key-value-observable ``data`` property. Call
-/// ``stop(completion:)`` to end the polling loop.
+/// On initialization the object starts a dedicated background thread whose run
+/// loop samples the IOHID and SMC sensors once per second. Each sample is
+/// accumulated into a ``SensorHistoryData`` instance, and the aggregated list
+/// is republished on the main queue through the key-value-observable ``data``
+/// property. Call ``stop(completion:)`` to end the polling loop, or simply
+/// release the object — the loop holds only a weak reference to it, so dropping
+/// the last reference stops the loop and deallocates the object rather than
+/// leaking.
 @objc
-public class Sensors: NSObject
+public class Sensors: NSObject, Synchronizable
 {
+    /// The interval, in seconds, between polling passes.
+    ///
+    /// It is also the maximum time the run loop blocks before re-checking
+    /// whether it should keep running, so a lost wake-up delays teardown by at
+    /// most this interval instead of hanging.
+    private static let pollInterval: TimeInterval = 1
+
     /// Whether the initial set of sensor readings has not been produced yet.
     ///
     /// Starts as `true` and becomes `false` after the first polling pass
@@ -52,75 +62,202 @@ public class Sensors: NSObject
     @objc private dynamic var sensors = [ String: SensorHistoryData ]()
 
     /// Whether the background polling loop should keep running.
+    ///
+    /// Read from the polling thread and written by ``stop(completion:)`` and
+    /// `deinit`, so it is only accessed inside ``synchronized(closure:)``.
     private var shouldRun = true
 
-    /// A closure to invoke once the polling loop has fully stopped.
-    private var completion: ( () -> Void )?
+    /// Whether the polling loop has fully stopped and torn down.
+    ///
+    /// Once `true`, ``stop(completion:)`` invokes its completion immediately
+    /// rather than queuing it. Only accessed inside ``synchronized(closure:)``.
+    private var stopped = false
 
-    /// Creates the object and immediately starts polling sensors on a
-    /// background queue.
+    /// The completion closures awaiting the polling loop's full stop.
+    ///
+    /// Only accessed inside ``synchronized(closure:)``.
+    private var completions = [ () -> Void ]()
+
+    /// The Core Foundation run loop driving the dedicated polling thread.
+    ///
+    /// Captured once the thread starts so ``stop(completion:)`` and `deinit`
+    /// can wake it for prompt teardown. Only accessed inside
+    /// ``synchronized(closure:)``.
+    private var runLoop: CFRunLoop?
+
+    /// Creates the object and immediately starts polling sensors on a dedicated
+    /// background thread.
+    ///
+    /// The thread owns a run loop that fires a repeating timer every
+    /// ``pollInterval`` seconds. Both the thread body and the timer hold only a
+    /// weak reference to the object, so it can be released and torn down through
+    /// `deinit` even if ``stop(completion:)`` is never called.
     @objc
     public override init()
     {
         super.init()
 
-        DispatchQueue.global( qos: .background ).async
+        let thread = Thread
         {
-            self.run()
+            [ weak self ] in
+
+            let runLoop = RunLoop.current
+            let timer   = Timer( timeInterval: Sensors.pollInterval, repeats: true )
+            {
+                [ weak self ] _ in self?.readSensors()
+            }
+
+            self?.pollingLoopDidStart( runLoop: runLoop.getCFRunLoop() )
+            runLoop.add( timer, forMode: .default )
+            self?.readSensors()
+
+            while self?.shouldKeepPolling() ?? false
+            {
+                CFRunLoopRunInMode( CFRunLoopMode.defaultMode, Sensors.pollInterval, false )
+            }
+
+            timer.invalidate()
+            self?.pollingLoopDidStop()
         }
+
+        thread.name             = "com.xs-labs.SensorsKit.Sensors.polling"
+        thread.qualityOfService = .background
+
+        thread.start()
+    }
+
+    /// Stops the polling loop when the object is released.
+    ///
+    /// Requests the loop to end and wakes its run loop so the dedicated thread
+    /// exits promptly, then invokes any completion closures still awaiting the
+    /// stop. Because the running loop holds only a weak reference to the object,
+    /// dropping the last external reference reaches this `deinit` rather than
+    /// leaking.
+    deinit
+    {
+        let completions = self.takePendingCompletions()
+
+        self.synchronized { self.shouldRun = false }
+        self.wakeRunLoop()
+
+        completions.forEach { $0() }
     }
 
     /// Requests that the background polling loop stop.
     ///
-    /// If polling has already stopped the call is a no-op and `completion` is
-    /// not invoked. Otherwise the loop finishes its current cycle, clears the
-    /// published ``data`` and invokes `completion`.
+    /// If the loop is still running, `completion` is queued and invoked once the
+    /// loop has fully stopped; the published ``data`` is cleared asynchronously
+    /// on the main queue, so it may still be non-empty when `completion` runs.
+    /// If the loop has already stopped, `completion` is invoked immediately.
+    /// Calling this method more than once is safe: each call's `completion` is
+    /// invoked exactly once.
+    ///
+    /// The completion may run on an arbitrary thread — the polling thread, or
+    /// the thread that releases the object — so dispatch to the main queue
+    /// yourself if it touches the UI.
     ///
     /// - Parameter completion: A closure invoked once the loop has stopped.
     @objc
     public func stop( completion: ( () -> Void )? )
     {
-        if self.shouldRun == false
+        let alreadyStopped = self.synchronized
         {
+            () -> Bool in
+
+            if self.stopped
+            {
+                return true
+            }
+
+            if let completion = completion
+            {
+                self.completions.append( completion )
+            }
+
+            self.shouldRun = false
+
+            return false
+        }
+
+        if alreadyStopped
+        {
+            completion?()
+
             return
         }
 
-        self.completion = completion
-        self.shouldRun  = false
+        self.wakeRunLoop()
     }
 
-    /// Runs the polling loop until ``stop(completion:)`` is called.
+    /// Records the run loop of the dedicated polling thread.
     ///
-    /// Schedules a repeating timer that samples the sensors every second while
-    /// driving the current run loop. Once stopped, it invalidates the timer,
-    /// clears the published ``data`` on the main queue and invokes the pending
-    /// completion closure.
-    private func run()
+    /// - Parameter runLoop: The Core Foundation run loop to wake on stop.
+    private func pollingLoopDidStart( runLoop: CFRunLoop )
     {
-        let timer = Timer.scheduledTimer( withTimeInterval: 1, repeats: true )
-        {
-            _ in self.readSensors()
-        }
+        self.synchronized { self.runLoop = runLoop }
+    }
 
-        self.readSensors()
-        RunLoop.current.add( timer, forMode: .default )
+    /// Whether the polling loop should perform another pass.
+    ///
+    /// - Returns: `true` while polling should continue.
+    private func shouldKeepPolling() -> Bool
+    {
+        return self.synchronized { self.shouldRun }
+    }
 
-        while self.shouldRun
-        {
-            RunLoop.current.run( until: Date( timeIntervalSinceNow: 5 ) )
-        }
-
-        timer.invalidate()
-
-        let completion  = self.completion
-        self.completion = nil
+    /// Finalizes the polling loop once it has stopped.
+    ///
+    /// Clears the published ``data`` on the main queue and invokes any
+    /// completion closures awaiting the stop.
+    private func pollingLoopDidStop()
+    {
+        let completions = self.takePendingCompletions()
 
         DispatchQueue.main.async
         {
             self.data = []
         }
 
-        completion?()
+        completions.forEach { $0() }
+    }
+
+    /// Marks the loop as stopped and returns the pending completion closures.
+    ///
+    /// Returns an empty array if the loop was already marked stopped, so the
+    /// completions are invoked exactly once even when both the polling thread
+    /// and `deinit` reach this point.
+    ///
+    /// - Returns: The completion closures to invoke.
+    private func takePendingCompletions() -> [ () -> Void ]
+    {
+        return self.synchronized
+        {
+            if self.stopped
+            {
+                return []
+            }
+
+            self.stopped = true
+
+            let completions  = self.completions
+            self.completions = []
+
+            return completions
+        }
+    }
+
+    /// Wakes the polling run loop so it re-checks whether to keep running.
+    ///
+    /// Called after ``shouldRun`` is cleared so a blocked run loop returns
+    /// promptly instead of waiting for its backstop timeout.
+    private func wakeRunLoop()
+    {
+        let runLoop = self.synchronized { self.runLoop }
+
+        if let runLoop = runLoop
+        {
+            CFRunLoopStop( runLoop )
+        }
     }
 
     /// Performs a single polling pass over every sensor source.

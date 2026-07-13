@@ -22,6 +22,7 @@
  * THE SOFTWARE.
  ******************************************************************************/
 
+import Foundation
 import Testing
 @testable import SensorsKit
 
@@ -125,5 +126,136 @@ struct SensorsTests
         let secondPass = Sensors.sorted( [ lower, upper ] )
 
         #expect( firstPass == secondPass )
+    }
+
+    /// Calling ``Sensors/stop(completion:)`` invokes its completion exactly
+    /// once.
+    @Test( .timeLimit( .minutes( 1 ) ) )
+    func stopInvokesCompletionExactlyOnce() async
+    {
+        let sensors = Sensors()
+        let counter = CallCounter()
+
+        await withCheckedContinuation
+        {
+            continuation in sensors.stop { counter.increment(); continuation.resume() }
+        }
+
+        try? await Task.sleep( nanoseconds: 300_000_000 )
+
+        #expect( counter.value == 1 )
+    }
+
+    /// A second ``Sensors/stop(completion:)`` still invokes its completion.
+    ///
+    /// The first call stops the loop; the second is made once the loop has
+    /// already stopped and must still invoke its completion rather than
+    /// discarding it, so an awaiting caller never hangs.
+    @Test( .timeLimit( .minutes( 1 ) ) )
+    func secondStopStillInvokesCompletion() async
+    {
+        let sensors = Sensors()
+
+        await withCheckedContinuation
+        {
+            continuation in sensors.stop { continuation.resume() }
+        }
+
+        await withCheckedContinuation
+        {
+            continuation in sensors.stop { continuation.resume() }
+        }
+    }
+
+    /// Releasing a ``Sensors`` without calling ``Sensors/stop(completion:)``
+    /// lets it deallocate.
+    ///
+    /// The polling loop holds only a weak reference to the object, so dropping
+    /// the last external reference must let it deallocate rather than leak.
+    @Test( .timeLimit( .minutes( 1 ) ) )
+    func deallocatesWhenReleasedWithoutStop() async
+    {
+        weak var weakSensors: Sensors?
+
+        do
+        {
+            let sensors = Sensors()
+            weakSensors = sensors
+
+            #expect( weakSensors != nil )
+        }
+
+        for _ in 0 ..< 100
+        {
+            if weakSensors == nil
+            {
+                break
+            }
+
+            try? await Task.sleep( nanoseconds: 50_000_000 )
+        }
+
+        #expect( weakSensors == nil )
+    }
+
+    /// Stopping an already-stopped object invokes its completion promptly.
+    ///
+    /// Once the loop has fully stopped, a further ``Sensors/stop(completion:)``
+    /// takes the immediate path — it does not wait on the polling loop — so its
+    /// completion fires near-instantly, independent of the hardware polling
+    /// duration. (The teardown of a *running* loop is instead bounded by the
+    /// in-flight polling pass, so it is not asserted here with a wall-clock
+    /// bound.)
+    @Test( .timeLimit( .minutes( 1 ) ) )
+    func repeatStopCompletesPromptly() async
+    {
+        let sensors = Sensors()
+
+        await withCheckedContinuation
+        {
+            continuation in sensors.stop { continuation.resume() }
+        }
+
+        let start = Date()
+
+        await withCheckedContinuation
+        {
+            continuation in sensors.stop { continuation.resume() }
+        }
+
+        #expect( Date().timeIntervalSince( start ) < 0.5 )
+    }
+}
+
+/// A thread-safe counter used to assert how many times a closure runs.
+private final class CallCounter: @unchecked Sendable
+{
+    /// The lock serializing access to ``count``.
+    private let lock = NSLock()
+
+    /// The number of recorded calls.
+    private var count = 0
+
+    /// Records one call.
+    func increment()
+    {
+        self.lock.lock()
+
+        self.count += 1
+
+        self.lock.unlock()
+    }
+
+    /// The number of recorded calls.
+    var value: Int
+    {
+        self.lock.lock()
+
+        defer
+        {
+            self.lock.unlock()
+        }
+
+        return self.count
     }
 }
