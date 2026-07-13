@@ -113,13 +113,13 @@ public class SensorHistoryData: NSObject, Synchronizable
     {
         return self.synchronized
         {
-            guard let max = self.data.min()
+            guard let value = self.data.min()
             else
             {
                 return nil
             }
 
-            return NSNumber( floatLiteral: max )
+            return NSNumber( floatLiteral: value )
         }
     }
 
@@ -129,13 +129,13 @@ public class SensorHistoryData: NSObject, Synchronizable
     {
         return self.synchronized
         {
-            guard let min = self.data.max()
+            guard let value = self.data.max()
             else
             {
                 return nil
             }
 
-            return NSNumber( floatLiteral: min )
+            return NSNumber( floatLiteral: value )
         }
     }
 
@@ -174,7 +174,11 @@ public class SensorHistoryData: NSObject, Synchronizable
     /// The value is appended to the history, which is then trimmed to its 50
     /// most recent samples. Key-value-observing change notifications for the
     /// derived ``values``, ``min``, ``max`` and ``last`` properties are posted
-    /// asynchronously on the main queue.
+    /// asynchronously on the main queue, after the sample has already been
+    /// stored. Because the buffer is updated synchronously but the notifications
+    /// are delivered asynchronously, an observer that re-reads the state when
+    /// notified sees the latest samples and may not observe every intermediate
+    /// value individually.
     ///
     /// - Parameter value: The value to record.
     @objc( addValue: )
@@ -205,11 +209,16 @@ public class SensorHistoryData: NSObject, Synchronizable
 
     /// A textual description including the sensor name, kind and the current
     /// minimum and maximum recorded values.
+    ///
+    /// The minimum and maximum are read from a single ``synchronized(closure:)``
+    /// snapshot of the samples, so they always reflect the same state rather
+    /// than two separately locked reads.
     public override var description: String
     {
-        let min = String( format: "%.2f", self.min?.doubleValue ?? 0 )
-        let max = String( format: "%.2f", self.max?.doubleValue ?? 0 )
+        let bounds  = self.synchronized { ( minimum: self.data.min(), maximum: self.data.max() ) }
+        let minimum = String( format: "%.2f", bounds.minimum ?? 0 )
+        let maximum = String( format: "%.2f", bounds.maximum ?? 0 )
 
-        return "\( super.description ): \( self.name ) (\( self.kind ), min: \( min ), max: \( max ))"
+        return "\( super.description ): \( self.name ) (\( self.kind ), min: \( minimum ), max: \( maximum ))"
     }
 }

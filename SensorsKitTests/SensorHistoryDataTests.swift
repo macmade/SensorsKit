@@ -129,4 +129,21 @@ struct SensorHistoryDataTests
         #expect( data.description.contains( "CPU" ) )
         #expect( data.description.contains( "thermal" ) )
     }
+
+    /// The textual description includes the formatted minimum and maximum,
+    /// which are read from a single consistent snapshot of the samples.
+    @Test
+    func descriptionIncludesMinAndMax()
+    {
+        let empty = SensorHistoryData( source: .hid, kind: .voltage, name: "V" )
+
+        #expect( empty.description.contains( "min: 0.00" ) )
+        #expect( empty.description.contains( "max: 0.00" ) )
+
+        let data = SensorHistoryData( source: .hid, kind: .voltage, name: "V" )
+
+        [ 1.0, 9.0 ].forEach { data.add( value: $0 ) }
+
+        #expect( data.description.contains( "(voltage, min: 1.00, max: 9.00)" ) )
+    }
 }

@@ -298,7 +298,7 @@
 <!-- MILESTONE 3 -->
 <div class="milestone">
     <div class="milestone-head">
-        <span class="pill status-notstarted">Not started</span>
+        <span class="pill status-completed">Completed</span>
         <h3>M3 — <code>SensorHistoryData</code> readability, KVO &amp; consistency</h3>
     </div>
     <div class="tags">
@@ -323,14 +323,28 @@
         <li>Build &amp; test via <code>xcodebuild</code> (Debug + Release).</li>
     </ul>
 
-    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
-    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-completed">Completed</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; 2026-07-13</div>
     <div class="field"><span class="label">Implementation notes</span></div>
-    <p class="placeholder">To be filled in during implementation.</p>
+    <ul>
+        <li><strong>Low 2:</strong> the <code>min</code>/<code>max</code> getters bound their local to the <em>opposite</em> name of what it held (<code>guard let max = self.data.min()</code>). Renamed both to a neutral <code>value</code> bound directly to <code>self.data.min()</code> / <code>self.data.max()</code>. Behavior is unchanged and is guarded by the existing <code>statisticsReflectRecordedValues</code> and <code>historyIsCappedAtFiftySamples</code> tests.</li>
+        <li><strong>Info 3:</strong> <code>description</code> previously read <code>self.min</code> and <code>self.max</code>, each acquiring the lock separately (two snapshots). It now reads <code>self.data.min()</code> and <code>self.data.max()</code> inside a <em>single</em> <code>synchronized</code> block, so both extremes come from one consistent snapshot. The formatted output (<code>%.2f</code>, <code>?? 0</code> empty fallback, wrapper layout) is byte-for-byte identical, and there is no lock nesting.</li>
+        <li><strong>Info 1:</strong> extended the <code>add(value:)</code> SwiftDoc to describe the asynchronous main-queue KVO delivery.</li>
+        <li><strong>No behavior change.</strong> Added a characterization test <code>descriptionIncludesMinAndMax</code> covering the empty-history <code>0.00</code> fallback and the full <code>(voltage, min: 1.00, max: 9.00)</code> layout, to lock the <code>description</code> output across the Info 3 refactor.</li>
+        <li><strong>Verification:</strong> Debug <code>xcodebuild test</code> → 21/21 pass; Release <code>xcodebuild build</code> → <code>BUILD SUCCEEDED</code>.</li>
+        <li><strong>Automated review loop:</strong> 1 round; converged with no Critical/High/Medium findings.</li>
+    </ul>
     <div class="field"><span class="label">Automated review</span></div>
-    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <p>Round 1 (fresh-context reviewer, built &amp; ran the suite) — converged, no Critical/High/Medium findings. It confirmed the <code>min</code>/<code>max</code> rename did not swap behavior, that <code>description</code> reads both extremes under a single lock with identical output and no deadlock/nesting, and that <code>self.data</code> is still only touched inside <code>synchronized</code>. Findings:</p>
+    <ul>
+        <li><span class="sev sev-low">Low</span> <strong><code>add(value:)</code> doc overstated KVO "coalescing"</strong> — each <code>add</code> posts its own balanced <code>willChange</code>/<code>didChange</code> block, so N adds produce N notifications; nothing coalesces. Verified against the body. <em>Resolution: Fixed</em> — reworded to describe the buffer advancing ahead of the asynchronous notifications (so an observer re-reads the latest state and may miss intermediate values) rather than claiming fewer notifications.</li>
+        <li><span class="sev sev-info">Info</span> <strong>Local <code>values</code> collided with the public <code>values</code> property</strong> in <code>description</code>. <em>Resolution: Fixed</em> — renamed the local to <code>bounds</code>.</li>
+        <li><span class="sev sev-info">Info</span> <strong>Characterization test was narrow</strong> — did not cover the empty-history fallback or the wrapper layout. <em>Resolution: Fixed</em> — added the <code>0.00</code> empty-case and full-layout assertions.</li>
+    </ul>
     <div class="field"><span class="label">Review comments</span></div>
-    <p class="placeholder">Human review feedback to be recorded here.</p>
+    <ul>
+        <li><strong>Approved</strong> — "Looks good." No changes requested.</li>
+    </ul>
 </div>
 
 <!-- MILESTONE 4 -->
