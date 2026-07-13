@@ -33,10 +33,15 @@ import SMCKit
 /// loop samples the IOHID and SMC sensors once per second. Each sample is
 /// accumulated into a ``SensorHistoryData`` instance, and the aggregated list
 /// is republished on the main queue through the key-value-observable ``data``
-/// property. Call ``stop(completion:)`` to end the polling loop, or simply
-/// release the object — the loop holds only a weak reference to it, so dropping
-/// the last reference stops the loop and deallocates the object rather than
-/// leaking.
+/// property.
+///
+/// SMC readings are classified into their kind heuristically, from the sensor
+/// key's name prefix, so their kind and labeling should be treated as
+/// best-effort: some values may be mislabeled and some sensors omitted.
+///
+/// Call ``stop(completion:)`` to end the polling loop, or simply release the
+/// object — the loop holds only a weak reference to it, so dropping the last
+/// reference stops the loop and deallocates the object rather than leaking.
 @objc
 public class Sensors: NSObject, Synchronizable
 {
@@ -341,8 +346,21 @@ public class Sensors: NSObject, Synchronizable
         IOHID.shared.readAmbientLightSensors().forEach { self.addSensorHistoryData( data: $0, kind: .ambientLight ) }
     }
 
-    /// Reads all SMC keys and records them, classifying each as thermal,
-    /// voltage or current based on its key name prefix (`T`, `V` or `I`).
+    /// Reads all SMC keys and records those with a floating-point value,
+    /// classifying each by its key-name prefix: `T` as thermal, `V` as voltage
+    /// and `I` as current.
+    ///
+    /// This prefix classification is a **best-effort heuristic**, not an exact
+    /// mapping — the SMC exposes no type metadata for its keys:
+    ///
+    /// - Not every `T`, `V` or `I` key is actually a temperature, voltage or
+    ///   current reading; a key may carry the prefix by coincidence and still be
+    ///   surfaced under that kind.
+    /// - A non-sensor key whose value is a `Double` or `Float32` is recorded,
+    ///   and may therefore be mislabeled; keys of any other value type (integers,
+    ///   booleans, strings, and so on) are ignored.
+    /// - Keys whose name does not start with `T`, `V` or `I` are dropped, so
+    ///   some genuine sensors may be omitted.
     private func readSMCSensors()
     {
         let all = SMC.shared.readAllKeys()

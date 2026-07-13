@@ -393,7 +393,7 @@
 <!-- MILESTONE 5 -->
 <div class="milestone">
     <div class="milestone-head">
-        <span class="pill status-notstarted">Not started</span>
+        <span class="pill status-completed">Completed</span>
         <h3>M5 — Document SMC classification as a heuristic</h3>
     </div>
     <div class="tags"><span class="sev sev-low">Low 4</span></div>
@@ -411,14 +411,24 @@
         <li>No behavioral change; confirm the suite still builds and passes.</li>
     </ul>
 
-    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
-    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-completed">Completed</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; 2026-07-13</div>
     <div class="field"><span class="label">Implementation notes</span></div>
-    <p class="placeholder">To be filled in during implementation.</p>
+    <ul>
+        <li><strong>Doc-only (Low 4).</strong> Expanded the <code>readSMCSensors()</code> SwiftDoc to state that the <code>T</code>/<code>V</code>/<code>I</code> prefix classification (thermal/voltage/current) is a best-effort heuristic: not every prefixed key is that kind of reading; a matching key may be surfaced and mislabeled; and keys outside those prefixes are dropped, so some genuine sensors are omitted.</li>
+        <li>Added a brief consumer-facing caveat to the class-level doc so callers know the SMC kind/labeling is best-effort.</li>
+        <li><strong>No behavior change.</strong> Verified: Debug <code>xcodebuild test</code> → 21/21 pass; Release <code>xcodebuild build</code> → <code>BUILD SUCCEEDED</code>.</li>
+        <li><strong>Automated review loop:</strong> 1 round; converged with no Critical/High/Medium findings.</li>
+    </ul>
     <div class="field"><span class="label">Automated review</span></div>
-    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <p>Round 1 (fresh-context reviewer) — converged, no Critical/High/Medium findings. The reviewer verified each doc claim against the real code: the prefix filtering and drop-of-non-<code>T</code>/<code>V</code>/<code>I</code> behavior, that a key matches at most one bucket, that a prefixed key is recorded without kind validation (so mislabeling is real), that non-<code>Double</code>/<code>Float32</code> values are ignored, and that the change is docs-only with valid DocC formatting. Findings:</p>
+    <ul>
+        <li><span class="sev sev-low">Low</span> <strong>"records the numeric ones" overstated what is recorded</strong> — SMC values can also be integers/booleans/strings, and only <code>Double</code>/<code>Float32</code> values are recorded, so an integer-typed <code>T</code>/<code>V</code>/<code>I</code> key is numeric yet dropped. <em>Resolution: Fixed</em> — reworded to "floating-point value" / "a <code>Double</code> or <code>Float32</code>", after confirming against <code>SMCHelper</code> that the SMC returns integer types (<code>si8</code>/<code>ui8</code>/…) which the recorder ignores.</li>
+    </ul>
     <div class="field"><span class="label">Review comments</span></div>
-    <p class="placeholder">Human review feedback to be recorded here.</p>
+    <ul>
+        <li><strong>Approved</strong> — "Looks good." No changes requested.</li>
+    </ul>
 </div>
 
 <!-- MILESTONE 6 -->
