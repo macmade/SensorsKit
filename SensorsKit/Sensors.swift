@@ -74,7 +74,7 @@ public class Sensors: NSObject, Synchronizable
     
     /// Matches SMC fan actual-speed keys, such as `F0Ac`, used to identify
     /// fan RPM readings among all the SMC keys.
-    private var regexFanRPM: NSRegularExpression
+    private let regexFanRPM: NSRegularExpression?
 
     /// Whether the polling loop has fully stopped and torn down.
     ///
@@ -104,7 +104,7 @@ public class Sensors: NSObject, Synchronizable
     @objc
     public override init()
     {
-        self.regexFanRPM = try! NSRegularExpression( pattern: "F[0-9]Ac" )
+        self.regexFanRPM = try? NSRegularExpression( pattern: "F[0-9]Ac" )
 
         super.init()
 
@@ -372,7 +372,7 @@ public class Sensors: NSObject, Synchronizable
         let all = SMC.shared.readAllKeys()
 
         all.filter { $0.keyName.hasPrefix( "T" ) }.forEach { self.addSensorHistoryData( data: $0, kind: .thermal ) }
-        all.filter { self.regexFanRPM.firstMatch(in: $0.keyName, range: NSMakeRange(0, $0.keyName.count)) != nil }.forEach { self.addSensorHistoryData( data: $0, kind: .rpm ) }
+        all.filter { self.regexFanRPM?.firstMatch( in: $0.keyName, range: NSRange( $0.keyName.startIndex..., in: $0.keyName ) ) != nil }.forEach { self.addSensorHistoryData( data: $0, kind: .rpm ) }
         all.filter { $0.keyName.hasPrefix( "V" ) }.forEach { self.addSensorHistoryData( data: $0, kind: .voltage ) }
         all.filter { $0.keyName.hasPrefix( "I" ) }.forEach { self.addSensorHistoryData( data: $0, kind: .current ) }
     }
