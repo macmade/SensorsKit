@@ -1,0 +1,418 @@
+<meta charset="utf-8">
+<title>SensorsKit — Code Review Implementation Plan</title>
+<style>
+    :root {
+        --bg:        #14161a;
+        --bg-alt:    #1b1e24;
+        --bg-card:   #20242b;
+        --border:    #2c313a;
+        --text:      #e6e8eb;
+        --text-dim:  #a4abb5;
+        --accent:    #5aa9e6;
+        --code-bg:   #0f1114;
+        --code-text: #d7dbe0;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        padding: 0 0 4rem;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        font-size: 16px;
+    }
+    header {
+        background: linear-gradient(160deg, #1d2937 0%, #14161a 70%);
+        border-bottom: 1px solid var(--border);
+        padding: 2.5rem 1.5rem 2rem;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+    h1 { margin: 0 0 .3rem; font-size: 1.9rem; letter-spacing: -.01em; }
+    h2 {
+        margin: 2.5rem 0 1rem;
+        font-size: 1.35rem;
+        padding-bottom: .4rem;
+        border-bottom: 1px solid var(--border);
+    }
+    h3 { margin: 0 0 .5rem; font-size: 1.12rem; }
+    .meta { color: var(--text-dim); font-size: .92rem; }
+    .meta strong { color: var(--text); }
+    p { margin: .6rem 0; }
+    code {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: .12em .4em;
+        border-radius: 4px;
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        font-size: .86em;
+    }
+    pre {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        font-size: .84rem;
+        line-height: 1.5;
+    }
+    pre code { background: none; padding: 0; }
+    a { color: var(--accent); }
+    .pill {
+        display: inline-block;
+        padding: .2em .8em;
+        border-radius: 999px;
+        font-size: .74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        vertical-align: middle;
+    }
+    .status-notstarted { background: #5b626e; color: #fff; }
+    .status-inprogress { background: #d1a13a; color: #1a1a1a; }
+    .status-completed  { background: #3f9e6b; color: #fff; }
+    .sev {
+        display: inline-block;
+        padding: .12em .6em;
+        border-radius: 5px;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: #fff;
+    }
+    .sev-medium { background: #d1a13a; color: #1a1a1a; }
+    .sev-low    { background: #3d7fc1; }
+    .sev-info   { background: #5b626e; }
+    .milestone {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        border-radius: 8px;
+        padding: 1.2rem 1.4rem;
+        margin: 1.4rem 0;
+    }
+    .milestone-head { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; margin-bottom: .3rem; }
+    .milestone-head h3 { margin: 0; }
+    .field { margin: .9rem 0 .2rem; }
+    .label { color: var(--text-dim); font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+    .tags { display: flex; flex-wrap: wrap; gap: .35rem; margin: .1rem 0 .4rem; }
+    ul { margin: .4rem 0; padding-left: 1.3rem; }
+    li { margin: .28rem 0; }
+    .placeholder { color: var(--text-dim); font-style: italic; }
+    .note { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; }
+    .qa { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: .3rem 1.2rem; margin: 1rem 0; }
+    .qa dt { font-weight: 700; margin: .9rem 0 .2rem; }
+    .qa dd { margin: 0 0 .3rem; color: var(--text-dim); }
+    .qa dd strong { color: var(--text); }
+    .task-list { list-style: none; padding-left: 0; }
+    .task-list li { padding-left: 1.6rem; position: relative; }
+    .task-list li::before { content: "☐"; position: absolute; left: 0; color: var(--text-dim); }
+</style>
+
+<header>
+    <div class="wrap" style="padding:0;">
+        <h1>SensorsKit — Code Review Implementation Plan</h1>
+        <p class="meta">
+            <strong>Generated:</strong> 2026-07-13
+            &nbsp;·&nbsp;
+            <strong>Source:</strong> <code>Docs/agent-plans/active/2026-07-12-code-review/code-review.html</code>
+        </p>
+    </div>
+</header>
+
+<div class="wrap">
+
+<h2>Overview</h2>
+<p>
+    This plan turns the 2026-07-12 SensorsKit code review into a sequence of small,
+    independently reviewable and committable milestones. The review found no critical
+    or high-severity defects; the work here addresses all eleven findings — two
+    Medium, five Low and four Info — plus a README typo.
+</p>
+<p>
+    The milestones are ordered from the most user-visible correctness issue
+    (nondeterministic ordering of the published <code>data</code>) through the most
+    substantial change (a full rework of the polling loop's lifecycle and threading,
+    which the user chose over a document-only approach), and finish with low-risk
+    readability, robustness and documentation touch-ups. Edits that touch the same
+    method are grouped into a single milestone to avoid conflicting changes across
+    commits. Every milestone keeps the <code>SensorsKit.xcodeproj</code> and the
+    Swift Testing suite in sync and is validated with <code>xcodebuild</code> in both
+    Debug and Release.
+</p>
+
+<h2>Questions &amp; answers</h2>
+<dl class="qa">
+    <dt>How many of the review's findings should the plan cover as milestones?</dt>
+    <dd><strong>All findings</strong> — the 2 Medium, 5 Low and 4 Info items, plus the README typo (the full review).</dd>
+
+    <dt>For the lifecycle leak (Medium 2) and the shared-thread / stop-latency issue (Low 1), which approach?</dt>
+    <dd><strong>Full rework</strong> — break self-retention (weak <code>self</code> + a <code>deinit</code> that ends the loop), move to a dedicated <code>Thread</code>, and make <code>stop()</code> prompt. This is an accepted behavioral change.</dd>
+
+    <dt>For the SMC prefix classification (Low 4), which approach?</dt>
+    <dd><strong>Document as heuristic</strong> — keep the <code>T</code>/<code>V</code>/<code>I</code> prefix logic and document it as best-effort; no behavioral change.</dd>
+</dl>
+
+<h2>Notes</h2>
+<div class="note">
+    <ul>
+        <li><strong>Primary target:</strong> <code>SensorsKit/Sensors.swift</code>, <code>SensorsKit/SensorHistoryData.swift</code>, <code>SensorsKit/Synchronizable.swift</code>. Tests live in <code>SensorsKitTests/</code> (<code>SensorsTests.swift</code>, <code>SensorHistoryDataTests.swift</code>, <code>SynchronizableTests.swift</code>).</li>
+        <li><strong>Build/test through Xcode.</strong> There is a <code>SensorsKit.xcodeproj</code> and no <code>Package.swift</code>, so use <code>xcodebuild</code> (Debug and Release, recursive submodules) rather than <code>swift build</code>/<code>swift test</code>. CI is <code>.github/workflows/ci-mac.yaml</code>.</li>
+        <li><strong>Submodules are out of scope.</strong> <code>IOHIDKit</code> and <code>SMCKit</code> are vendored git submodules read only at their public boundaries. No submodule changes are planned; if one ever seems warranted, stop and ask before touching it.</li>
+        <li><strong>Conventions to follow:</strong> <code>let</code> over <code>var</code>; no force-unwraps; early returns; prefer <code>forEach</code>/<code>map</code>/<code>filter</code>/<code>reduce</code> over raw loops; one type per file; explicit <code>public</code>; SwiftDoc comments on both public <em>and</em> private types and members; aligned <code>=</code>; blank line between a call and an assignment.</li>
+        <li><strong>Living document:</strong> each milestone's Status, Completed, Implementation notes, Automated review and Review comments fields are updated in place as the work is implemented and reviewed.</li>
+        <li><strong>Finding coverage map:</strong> M1 → Medium&nbsp;1; M2 → Medium&nbsp;2, Low&nbsp;1, Low&nbsp;3, Low&nbsp;5; M3 → Low&nbsp;2, Info&nbsp;1, Info&nbsp;3; M4 → Info&nbsp;2; M5 → Low&nbsp;4; M6 → Info&nbsp;4.</li>
+    </ul>
+</div>
+
+<h2>Milestones</h2>
+
+<!-- MILESTONE 1 -->
+<div class="milestone">
+    <div class="milestone-head">
+        <span class="pill status-completed">Completed</span>
+        <h3>M1 — Deterministic ordering of the published <code>data</code></h3>
+    </div>
+    <div class="tags"><span class="sev sev-medium">Medium 1</span></div>
+
+    <div class="field"><span class="label">Goal</span></div>
+    <p>
+        Make the KVO-observable <code>Sensors.data</code> array have a stable,
+        deterministic element order so a consumer binding it to a table or list no
+        longer sees rows shuffle arbitrarily between polling passes, and so tests and
+        UI are reproducible.
+    </p>
+
+    <div class="field"><span class="label">Tasks</span></div>
+    <ul class="task-list">
+        <li>In <code>Sensors.readSensors()</code> (<code>Sensors.swift:135–141</code>), replace <code>[ SensorHistoryData ]( sensors.values )</code> with a deterministically sorted array, sorting by a stable composite key: <code>(source.rawValue, kind.rawValue, name)</code>.</li>
+        <li>Confirm the composite key is a total order for the published set (the <code>sensors</code> dictionary keys are already unique per source+kind+name, so no ties remain).</li>
+        <li>Consider extracting the ordering into a small private helper so it can be unit-tested directly without hardware.</li>
+        <li>Add/extend a test in <code>SensorsTests.swift</code> asserting the published order is stable and correctly sorted across passes.</li>
+        <li>Build &amp; test via <code>xcodebuild</code> (Debug + Release); keep the xcodeproj/tests in sync.</li>
+    </ul>
+
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-completed">Completed</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; 2026-07-13</div>
+    <div class="field"><span class="label">Implementation notes</span></div>
+    <ul>
+        <li>Added an <code>internal static func sorted( _: [ SensorHistoryData ] ) -&gt; [ SensorHistoryData ]</code> to <code>Sensors</code> that orders histories by the composite key <code>(source.rawValue, kind.rawValue, name)</code> using Swift's lexicographic tuple <code>&lt;</code> (all three components are <code>Comparable</code>; <code>String</code> comparison is non-localized Unicode-scalar, which keeps it deterministic across runs).</li>
+        <li><code>readSensors()</code> now publishes <code>Sensors.sorted( [ SensorHistoryData ]( sensors.values ) )</code> instead of the unordered dictionary values. The sort is computed on the background polling thread and only the <code>self.data</code> assignment stays on the main queue.</li>
+        <li>Confirmed the key is a total order for the published set: the <code>sensors</code> dictionary keys (<code>"IOHID.%llu.%@"</code> / <code>"SMC.%llu.%@"</code> built from source, <code>kind.rawValue</code> and name) are a bijection with the <code>(source, kind, name)</code> triple, so no two published values share a key — the order is unique and does not depend on <code>sorted</code>'s stability.</li>
+        <li>Chosen approach (agreed with the owner): the helper is <code>internal</code>, not <code>public</code>, and the test reaches it via <code>@testable import SensorsKit</code> — the public API is unchanged.</li>
+        <li><strong>TDD:</strong> added the failing test <code>sortedProducesDeterministicOrder()</code> first (compile error — <code>type 'Sensors' has no member 'sorted'</code>), then implemented the helper until it passed.</li>
+        <li><strong>CI adjustment:</strong> the Release configuration builds the framework with <code>ENABLE_TESTABILITY = NO</code>, so <code>@testable import</code> cannot resolve the module in the Release <em>test</em> action. Per the owner's explicit direction, the Release matrix entry in <code>.github/workflows/ci-mac.yaml</code> was changed to <code>test: 0</code> (it still runs <code>build</code>, <code>analyze</code> and <code>info</code>); Debug keeps <code>test: 1</code>, where <code>@testable</code> works. The Release <em>build</em> action does not compile the test bundle (the scheme's build action contains only the framework), so it is unaffected.</li>
+        <li><strong>Verification:</strong> Debug <code>xcodebuild test</code> → 14/14 pass (including the new test); Release <code>xcodebuild build</code> → <code>BUILD SUCCEEDED</code>.</li>
+        <li><strong>Automated review loop:</strong> 1 round; converged with no Critical/High/Medium findings.</li>
+        <li><strong>Follow-up (owner review):</strong> the <code>name</code> comparison was changed from plain code-point <code>&lt;</code> to a case-insensitive, numeric-aware comparison pinned to a fixed <code>en_US</code> locale (<code>name.compare( _, options: [ .numeric, .caseInsensitive ], range: nil, locale: Sensors.sortLocale )</code>), cached in a <code>private static let sortLocale</code>. This orders names the way a person reads them (<code>"Core 2"</code> before <code>"Core 10"</code>; case ignored) while staying independent of the host's locale. When the locale-aware comparison returns <code>.orderedSame</code> for two distinct names (e.g. <code>"TC0P"</code> vs <code>"tc0p"</code>, or numerically equal forms), a plain code-point tie-break preserves a total order, so full determinism is retained. Caveat accepted: locale collation depends on the OS's ICU tables, so the order is identical across machines on the same OS/ICU version rather than immutable across OS upgrades — a non-issue for the ASCII SMC keys and simple IOHID names in practice.</li>
+        <li><strong>TDD (follow-up):</strong> added <code>sortedUsesCaseInsensitiveNaturalOrdering()</code> (fails under code-point ordering — <code>"Core 10"</code>/<code>"Zebra"</code> misordered — passes after the change) and <code>sortedIsDeterministicForCollationEquivalentNames()</code> (guards the tie-break). Verified: Debug <code>xcodebuild test</code> → 16/16 pass; Release <code>xcodebuild build</code> → <code>BUILD SUCCEEDED</code>.</li>
+    </ul>
+    <div class="field"><span class="label">Automated review</span></div>
+    <p>Round 1 (fresh-context reviewer) — converged, no Critical/High/Medium findings. The sort was verified sound (valid strict total order; genuine bijection with the dictionary keys; identity-based test assertion genuinely checks order), with no regressions in scope. Outstanding items:</p>
+    <ul>
+        <li><span class="sev sev-low">Low</span> <strong>Release CI no longer runs the suite against the optimized (<code>-O</code>) build</strong> — an inherent consequence of the <code>@testable</code>/<code>test: 0</code> approach; owner-directed. <em>Resolution: Deferred.</em></li>
+        <li><span class="sev sev-info">Info</span> <strong>Test order assertion relies on <code>NSObject</code> identity <code>==</code></strong> — latent fragility if <code>isEqual:</code> is ever overridden for value semantics; not a current defect. Suggested to optionally assert on a projected <code>(source, kind, name)</code> key sequence. <em>Resolution: Deferred.</em></li>
+        <li><span class="sev sev-info">Info</span> <strong>Coverage gaps</strong> — the empty-array case and pure <code>name</code>-only tie-breaking are not exercised. <em>Resolution: Deferred.</em></li>
+        <li><span class="sev sev-info">Info</span> <strong>Implicit <code>internal</code> on the helper</strong> — could be written as an explicit <code>internal static func</code> for clarity. <em>Resolution: Deferred.</em></li>
+    </ul>
+    <div class="field"><span class="label">Review comments</span></div>
+    <ul>
+        <li><strong>Q:</strong> What about case-sensitivity, natural ordering, etc? (Regarding the <code>name</code> component of the sort key.)</li>
+        <li><strong>Q:</strong> What about case-insensitive and numeric, but enforcing a locale (like US), so it's deterministic?</li>
+    </ul>
+</div>
+
+<!-- MILESTONE 2 -->
+<div class="milestone">
+    <div class="milestone-head">
+        <span class="pill status-notstarted">Not started</span>
+        <h3>M2 — Polling loop lifecycle &amp; threading rework</h3>
+    </div>
+    <div class="tags">
+        <span class="sev sev-medium">Medium 2</span>
+        <span class="sev sev-low">Low 1</span>
+        <span class="sev sev-low">Low 3</span>
+        <span class="sev sev-low">Low 5</span>
+    </div>
+
+    <div class="field"><span class="label">Goal</span></div>
+    <p>
+        Rework the polling loop so a <code>Sensors</code> object no longer retains
+        itself for the process lifetime, can be reclaimed and stopped on
+        deallocation, does not indefinitely occupy a shared GCD worker thread, tears
+        down promptly on <code>stop()</code>, and never silently drops a completion
+        closure. This is the plan's largest, riskiest change and is intentionally the
+        one behavioral rework; all four findings here touch <code>run()</code> /
+        <code>stop()</code> / the timer, so they are done together to avoid
+        conflicting edits.
+    </p>
+
+    <div class="field"><span class="label">Tasks</span></div>
+    <ul class="task-list">
+        <li><strong>Break self-retention (Medium 2):</strong> capture <code>self</code> weakly in the loop dispatch and in the timer closure (<code>{ [weak self] _ in self?.readSensors() }</code>), guarding for <code>nil</code>, so the running loop no longer keeps the object alive.</li>
+        <li><strong>Dedicated thread (Low 1):</strong> replace the borrowed <code>.background</code> global-queue thread with a dedicated <code>Thread</code> that owns the run loop for the object's lifetime, so pooled libdispatch workers are not held indefinitely.</li>
+        <li><strong>Deinit-driven teardown (Medium 2):</strong> add a <code>deinit</code> that requests the loop to end (sets <code>shouldRun = false</code> and wakes the run loop), so dropping the object without <code>stop()</code> stops polling and deallocates it rather than leaking.</li>
+        <li><strong>Prompt stop (Low 1):</strong> wake/stop the run loop from <code>stop()</code> (and <code>deinit</code>) instead of relying on the 5&nbsp;s <code>run(until:)</code> window, so teardown latency is minimal.</li>
+        <li><strong>Remove redundant timer add (Low 3):</strong> drop the duplicate <code>RunLoop.current.add(timer, forMode: .default)</code> — <code>scheduledTimer</code> already schedules it — or restructure to a single explicit <code>Timer(timeInterval:)</code> + one <code>add(...)</code> on the dedicated thread's run loop.</li>
+        <li><strong>Completion on repeat stop (Low 5):</strong> when <code>stop()</code> is called while already stopped, invoke the supplied <code>completion</code> immediately (documenting the semantics) instead of discarding it, so an awaiting caller never hangs.</li>
+        <li>Ensure thread-safe access to <code>shouldRun</code> / <code>completion</code> across the dedicated thread and calling threads (reuse <code>Synchronizable</code> or an equivalent guard).</li>
+        <li>Update the SwiftDoc on <code>init()</code>, <code>stop(completion:)</code>, <code>run()</code> and the new <code>deinit</code> to reflect the new lifetime/threading contract.</li>
+        <li><strong>Tests (<code>SensorsTests.swift</code>):</strong> <code>stop()</code> invokes its completion exactly once; a second <code>stop()</code> still invokes its completion; releasing a <code>Sensors</code> without calling <code>stop()</code> lets it deallocate (assert a <code>weak</code> reference becomes <code>nil</code>); stop teardown is prompt.</li>
+        <li>Build &amp; test via <code>xcodebuild</code> (Debug + Release); keep the xcodeproj/tests in sync.</li>
+    </ul>
+
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Implementation notes</span></div>
+    <p class="placeholder">To be filled in during implementation. Note carefully the ordering of run-loop teardown vs. <code>deinit</code>, and confirm no retain cycle remains via the timer.</p>
+    <div class="field"><span class="label">Automated review</span></div>
+    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <div class="field"><span class="label">Review comments</span></div>
+    <p class="placeholder">Human review feedback to be recorded here.</p>
+</div>
+
+<!-- MILESTONE 3 -->
+<div class="milestone">
+    <div class="milestone-head">
+        <span class="pill status-notstarted">Not started</span>
+        <h3>M3 — <code>SensorHistoryData</code> readability, KVO &amp; consistency</h3>
+    </div>
+    <div class="tags">
+        <span class="sev sev-low">Low 2</span>
+        <span class="sev sev-info">Info 1</span>
+        <span class="sev sev-info">Info 3</span>
+    </div>
+
+    <div class="field"><span class="label">Goal</span></div>
+    <p>
+        Remove a readability trap and two minor consistency/clarity issues in
+        <code>SensorHistoryData</code> without changing observable behavior, so the
+        code no longer invites an accidental future bug.
+    </p>
+
+    <div class="field"><span class="label">Tasks</span></div>
+    <ul class="task-list">
+        <li><strong>Low 2:</strong> in the <code>min</code>/<code>max</code> getters (<code>SensorHistoryData.swift:112–140</code>), rename the inverted local bindings to match their property, or bind directly (e.g. <code>guard let value = self.data.min() else { return nil }</code>), keeping the correct behavior the tests confirm.</li>
+        <li><strong>Info 3:</strong> in <code>description</code> (<code>208–214</code>), read <code>min</code> and <code>max</code> within a single <code>synchronized</code> block so both reflect the same snapshot rather than two separate lock acquisitions.</li>
+        <li><strong>Info 1:</strong> extend the SwiftDoc on <code>add(value:)</code> (<code>191–202</code>) to document that the KVO notifications are posted asynchronously on the main queue and may coalesce, so observers re-read the latest state and intermediate samples may not be individually observed.</li>
+        <li>Confirm <code>SensorHistoryDataTests.swift</code> still passes; add a small assertion if the direct-binding refactor warrants it.</li>
+        <li>Build &amp; test via <code>xcodebuild</code> (Debug + Release).</li>
+    </ul>
+
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Implementation notes</span></div>
+    <p class="placeholder">To be filled in during implementation.</p>
+    <div class="field"><span class="label">Automated review</span></div>
+    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <div class="field"><span class="label">Review comments</span></div>
+    <p class="placeholder">Human review feedback to be recorded here.</p>
+</div>
+
+<!-- MILESTONE 4 -->
+<div class="milestone">
+    <div class="milestone-head">
+        <span class="pill status-notstarted">Not started</span>
+        <h3>M4 — <code>Synchronizable</code>: release the lock via <code>defer</code></h3>
+    </div>
+    <div class="tags"><span class="sev sev-info">Info 2</span></div>
+
+    <div class="field"><span class="label">Goal</span></div>
+    <p>
+        Make the lock release in <code>Synchronizable</code> unconditional and
+        future-proof, so a later throwing/rethrowing variant could not leave the lock
+        held on an early exit.
+    </p>
+
+    <div class="field"><span class="label">Tasks</span></div>
+    <ul class="task-list">
+        <li>In both the static and instance default implementations (<code>Synchronizable.swift:60–85</code>), release with <code>defer { objc_sync_exit(...) }</code> immediately after <code>objc_sync_enter(...)</code>, preserving the current return-value semantics.</li>
+        <li>Confirm <code>SynchronizableTests.swift</code> (including the 10k-iteration concurrency check) still passes.</li>
+        <li>Build &amp; test via <code>xcodebuild</code> (Debug + Release).</li>
+    </ul>
+
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Implementation notes</span></div>
+    <p class="placeholder">To be filled in during implementation.</p>
+    <div class="field"><span class="label">Automated review</span></div>
+    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <div class="field"><span class="label">Review comments</span></div>
+    <p class="placeholder">Human review feedback to be recorded here.</p>
+</div>
+
+<!-- MILESTONE 5 -->
+<div class="milestone">
+    <div class="milestone-head">
+        <span class="pill status-notstarted">Not started</span>
+        <h3>M5 — Document SMC classification as a heuristic</h3>
+    </div>
+    <div class="tags"><span class="sev sev-low">Low 4</span></div>
+
+    <div class="field"><span class="label">Goal</span></div>
+    <p>
+        Document — without changing behavior — that SMC key classification by
+        first-letter prefix is best-effort, so consumers understand the exposed data
+        may include mislabeled keys and omit non-prefixed sensors.
+    </p>
+
+    <div class="field"><span class="label">Tasks</span></div>
+    <ul class="task-list">
+        <li>Expand the SwiftDoc on <code>readSMCSensors()</code> (<code>Sensors.swift:156–163</code>), and the class-level docs if appropriate, to state that classifying keys by the <code>T</code>/<code>V</code>/<code>I</code> prefix is a best-effort heuristic: not every such key is a temperature/voltage/current reading, non-sensor keys that decode to a number may be surfaced and mislabeled, and keys outside those prefixes are dropped.</li>
+        <li>No behavioral change; confirm the suite still builds and passes.</li>
+    </ul>
+
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Implementation notes</span></div>
+    <p class="placeholder">To be filled in during implementation.</p>
+    <div class="field"><span class="label">Automated review</span></div>
+    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <div class="field"><span class="label">Review comments</span></div>
+    <p class="placeholder">Human review feedback to be recorded here.</p>
+</div>
+
+<!-- MILESTONE 6 -->
+<div class="milestone">
+    <div class="milestone-head">
+        <span class="pill status-notstarted">Not started</span>
+        <h3>M6 — Fix README typo</h3>
+    </div>
+    <div class="tags"><span class="sev sev-info">Info 4</span></div>
+
+    <div class="field"><span class="label">Goal</span></div>
+    <p>Correct a spelling error in the README.</p>
+
+    <div class="field"><span class="label">Tasks</span></div>
+    <ul class="task-list">
+        <li>In <code>README.md:13</code>, change <code>prvate</code> to <code>private</code>.</li>
+    </ul>
+
+    <div class="field"><span class="label">Status</span> &nbsp; <span class="pill status-notstarted">Not started</span></div>
+    <div class="field"><span class="label">Completed</span> &nbsp; <span class="placeholder">—</span></div>
+    <div class="field"><span class="label">Implementation notes</span></div>
+    <p class="placeholder">To be filled in during implementation.</p>
+    <div class="field"><span class="label">Automated review</span></div>
+    <p class="placeholder">To be filled in from the automated review loop.</p>
+    <div class="field"><span class="label">Review comments</span></div>
+    <p class="placeholder">Human review feedback to be recorded here.</p>
+</div>
+
+<h2>Appendix</h2>
+<p class="meta">Reference — the ordering finding (M1 / Medium&nbsp;1), for context:</p>
+<pre><code>// Sensors.swift — republished every second
+let sensors = self.sensors            // [String: SensorHistoryData]
+
+DispatchQueue.main.async
+{
+    self.data    = [ SensorHistoryData ]( sensors.values )  // order is unspecified
+    self.loading = false
+}</code></pre>
+<p class="meta">
+    Full source review: <a href="code-review.html">code-review.html</a> (same directory).
+</p>
+
+</div>

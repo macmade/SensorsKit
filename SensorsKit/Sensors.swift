@@ -133,11 +133,64 @@ public class Sensors: NSObject
         self.readSMCSensors()
 
         let sensors = self.sensors
+        let sorted  = Sensors.sorted( [ SensorHistoryData ]( sensors.values ) )
 
         DispatchQueue.main.async
         {
-            self.data    = [ SensorHistoryData ]( sensors.values )
+            self.data    = sorted
             self.loading = false
+        }
+    }
+
+    /// The fixed locale used to order sensor names.
+    ///
+    /// A specific, host-independent locale (`en_US`) is used so the name
+    /// ordering does not vary with the machine's current locale, keeping the
+    /// published order deterministic across machines.
+    private static let sortLocale = Locale( identifier: "en_US" )
+
+    /// Sorts sensor histories into a stable, deterministic order.
+    ///
+    /// The histories are ordered by `source`, then `kind`, then `name`. The
+    /// `name` comparison uses the fixed ``sortLocale`` with the numeric and
+    /// case-insensitive options, so names sort the way a person reads them:
+    /// case is ignored (`"apple"` interleaves with `"Zebra"`) and embedded
+    /// numbers compare by value (`"Core 2"` precedes `"Core 10"`). When the
+    /// locale-aware comparison treats two names as equal, a plain code-point
+    /// comparison breaks the tie so the result stays a total order.
+    ///
+    /// Because a source, kind and name triple uniquely identifies a history,
+    /// this ordering is total and the same set of histories always produces the
+    /// same sequence — so a consumer binding ``data`` to a table or list no
+    /// longer sees its rows shuffle arbitrarily between polling passes.
+    ///
+    /// - Parameter sensors: The histories to order.
+    ///
+    /// - Returns: The histories sorted by their composite key.
+    static func sorted( _ sensors: [ SensorHistoryData ] ) -> [ SensorHistoryData ]
+    {
+        return sensors.sorted
+        {
+            lhs, rhs in
+
+            if lhs.source.rawValue != rhs.source.rawValue
+            {
+                return lhs.source.rawValue < rhs.source.rawValue
+            }
+
+            if lhs.kind.rawValue != rhs.kind.rawValue
+            {
+                return lhs.kind.rawValue < rhs.kind.rawValue
+            }
+
+            let order = lhs.name.compare( rhs.name, options: [ .numeric, .caseInsensitive ], range: nil, locale: Sensors.sortLocale )
+
+            if order != .orderedSame
+            {
+                return order == .orderedAscending
+            }
+
+            return lhs.name < rhs.name
         }
     }
 

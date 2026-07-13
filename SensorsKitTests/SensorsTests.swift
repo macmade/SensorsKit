@@ -23,7 +23,7 @@
  ******************************************************************************/
 
 import Testing
-import SensorsKit
+@testable import SensorsKit
 
 /// Lifecycle tests for ``Sensors``.
 ///
@@ -61,5 +61,69 @@ struct SensorsTests
         {
             continuation in sensors.stop { continuation.resume() }
         }
+    }
+
+    /// The ordering helper produces a stable, deterministic order regardless of
+    /// the input order.
+    ///
+    /// Histories are sorted by the composite key
+    /// `(source.rawValue, kind.rawValue, name)`, so the same set always yields
+    /// the same order — even when the source dictionary enumerates its values
+    /// differently between polling passes.
+    @Test
+    func sortedProducesDeterministicOrder()
+    {
+        let a = SensorHistoryData( source: .hid, kind: .thermal, name: "A" )
+        let b = SensorHistoryData( source: .hid, kind: .thermal, name: "B" )
+        let c = SensorHistoryData( source: .hid, kind: .voltage, name: "A" )
+        let d = SensorHistoryData( source: .smc, kind: .thermal, name: "A" )
+
+        let expected = [ a, b, c, d ]
+
+        let firstPass  = Sensors.sorted( [ d, b, a, c ] )
+        let secondPass = Sensors.sorted( [ c, a, d, b ] )
+
+        #expect( firstPass == expected )
+        #expect( secondPass == expected )
+        #expect( firstPass == secondPass )
+    }
+
+    /// Names are ordered case-insensitively and with numeric awareness.
+    ///
+    /// Within a single source and kind, `name` is compared using a fixed
+    /// `en_US` locale with the numeric and case-insensitive options, so
+    /// `"Core 2"` precedes `"Core 10"` (numeric, not lexicographic) and
+    /// `"apple"`/`"Zebra"` interleave by letter rather than by case.
+    @Test
+    func sortedUsesCaseInsensitiveNaturalOrdering()
+    {
+        let apple  = SensorHistoryData( source: .hid, kind: .thermal, name: "apple" )
+        let core2  = SensorHistoryData( source: .hid, kind: .thermal, name: "Core 2" )
+        let core10 = SensorHistoryData( source: .hid, kind: .thermal, name: "Core 10" )
+        let zebra  = SensorHistoryData( source: .hid, kind: .thermal, name: "Zebra" )
+
+        let expected = [ apple, core2, core10, zebra ]
+        let sorted   = Sensors.sorted( [ core10, zebra, core2, apple ] )
+
+        #expect( sorted == expected )
+    }
+
+    /// Names that the locale-aware comparison treats as equal are still ordered
+    /// deterministically.
+    ///
+    /// `"TC0P"` and `"tc0p"` compare as equal under the case-insensitive
+    /// comparison, so the helper falls back to a plain code-point tie-break to
+    /// keep the overall order a total order — the same input set always yields
+    /// the same sequence regardless of the input order.
+    @Test
+    func sortedIsDeterministicForCollationEquivalentNames()
+    {
+        let upper = SensorHistoryData( source: .smc, kind: .thermal, name: "TC0P" )
+        let lower = SensorHistoryData( source: .smc, kind: .thermal, name: "tc0p" )
+
+        let firstPass  = Sensors.sorted( [ upper, lower ] )
+        let secondPass = Sensors.sorted( [ lower, upper ] )
+
+        #expect( firstPass == secondPass )
     }
 }

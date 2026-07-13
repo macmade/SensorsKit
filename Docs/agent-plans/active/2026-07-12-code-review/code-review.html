@@ -1,0 +1,456 @@
+<meta charset="utf-8">
+<title>SensorsKit — Code Review</title>
+<style>
+    :root {
+        --bg:        #14161a;
+        --bg-alt:    #1b1e24;
+        --bg-card:   #20242b;
+        --border:    #2c313a;
+        --text:      #e6e8eb;
+        --text-dim:  #a4abb5;
+        --accent:    #5aa9e6;
+        --code-bg:   #0f1114;
+        --code-text: #d7dbe0;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        padding: 0 0 4rem;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        font-size: 16px;
+    }
+    header {
+        background: linear-gradient(160deg, #1d2937 0%, #14161a 70%);
+        border-bottom: 1px solid var(--border);
+        padding: 2.5rem 1.5rem 2rem;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+    h1 { margin: 0 0 .3rem; font-size: 1.9rem; letter-spacing: -.01em; }
+    h2 {
+        margin: 2.5rem 0 1rem;
+        font-size: 1.35rem;
+        padding-bottom: .4rem;
+        border-bottom: 1px solid var(--border);
+    }
+    h3 { margin: 0 0 .5rem; font-size: 1.08rem; }
+    .meta { color: var(--text-dim); font-size: .92rem; }
+    .meta strong { color: var(--text); }
+    p { margin: .6rem 0; }
+    code {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: .12em .4em;
+        border-radius: 4px;
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        font-size: .86em;
+    }
+    pre {
+        background: var(--code-bg);
+        color: var(--code-text);
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        font-size: .84rem;
+        line-height: 1.5;
+    }
+    pre code { background: none; padding: 0; }
+    .pill {
+        display: inline-block;
+        padding: .18em .7em;
+        border-radius: 999px;
+        font-size: .74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: #fff;
+        vertical-align: middle;
+    }
+    .sev-critical { background: #d64545; }
+    .sev-high     { background: #e07b39; }
+    .sev-medium   { background: #d1a13a; color: #1a1a1a; }
+    .sev-low      { background: #3d7fc1; }
+    .sev-info     { background: #5b626e; }
+    .counts { margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+    .counts .pill { font-size: .78rem; }
+    .finding {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--border);
+        border-radius: 8px;
+        padding: 1.1rem 1.3rem;
+        margin: 1.1rem 0;
+    }
+    .finding.medium { border-left-color: #d1a13a; }
+    .finding.low    { border-left-color: #3d7fc1; }
+    .finding.info   { border-left-color: #5b626e; }
+    .finding-head { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-bottom: .5rem; }
+    .finding-head h3 { margin: 0; }
+    .tag {
+        font-size: .74rem;
+        color: var(--text-dim);
+        background: var(--bg-alt);
+        border: 1px solid var(--border);
+        padding: .12em .55em;
+        border-radius: 5px;
+    }
+    .loc {
+        font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+        font-size: .82rem;
+        color: var(--accent);
+        display: block;
+        margin: .2rem 0 .6rem;
+        word-break: break-all;
+    }
+    .label { color: var(--text-dim); font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; }
+    .rec { background: var(--bg-alt); border-radius: 6px; padding: .7rem .9rem; margin-top: .7rem; border: 1px solid var(--border); }
+    ul { margin: .5rem 0; padding-left: 1.3rem; }
+    li { margin: .25rem 0; }
+    a { color: var(--accent); }
+    .note { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; }
+    .strength { border-left: 4px solid #3f9e6b; }
+</style>
+
+<header>
+    <div class="wrap" style="padding:0;max-width:960px;margin:0 auto;">
+        <h1>SensorsKit — Code Review</h1>
+        <p class="meta"><strong>Generated:</strong> 2026-07-12 &nbsp;·&nbsp; <strong>Scope:</strong> Whole repository (primary target <code>SensorsKit/</code>; vendored <code>Submodules/</code> reviewed only where the main code depends on them)</p>
+    </div>
+</header>
+
+<div class="wrap">
+
+<h2>Summary</h2>
+<p>
+    SensorsKit is a small, focused macOS framework (three Swift files) that polls
+    hardware sensors through the IOHID and SMC subsystems once per second and
+    publishes an observable, key-value-observing history of readings. The code is
+    clean, well-documented, and the thread-safety model — a background poller that
+    mutates each <code>SensorHistoryData</code> through a <code>Synchronizable</code>
+    lock while main-thread observers read the same objects — is sound and matches
+    the intent recorded in the recent <em>"Updating data on main thread"</em> commit.
+    The Swift Testing suite is reasonable and CI builds and tests both Debug and
+    Release.
+</p>
+<p>
+    No critical or high-severity defects were found. The most consequential issues
+    are two mediums in <code>Sensors.swift</code>: the published <code>data</code>
+    array is rebuilt from an unordered dictionary each pass, so its element order is
+    nondeterministic and will visibly shuffle in any list-based UI; and the polling
+    object retains itself for the process lifetime, so a consumer that drops it
+    without calling <code>stop()</code> leaks the object and leaves a 1&nbsp;Hz
+    hardware-polling loop running forever on a borrowed GCD worker thread. The
+    remaining findings are lower-severity robustness, correctness-of-classification,
+    and readability points.
+</p>
+<div class="counts">
+    <span class="pill sev-critical">Critical: 0</span>
+    <span class="pill sev-high">High: 0</span>
+    <span class="pill sev-medium">Medium: 2</span>
+    <span class="pill sev-low">Low: 5</span>
+    <span class="pill sev-info">Info: 4</span>
+</div>
+
+<h2>Notes</h2>
+<div class="note">
+    <ul>
+        <li><strong>Files reviewed in depth:</strong> <code>SensorsKit/Sensors.swift</code>, <code>SensorsKit/SensorHistoryData.swift</code>, <code>SensorsKit/Synchronizable.swift</code>, and the three test files under <code>SensorsKitTests/</code>.</li>
+        <li><strong>Submodules</strong> (<code>IOHIDKit</code>, <code>SMCKit</code>) are independent repositories pinned as git submodules. They were read only at their public boundaries (<code>IOHIDData</code>, <code>SMCData</code>, <code>IOHID.shared</code>, <code>SMC.shared.readAllKeys</code>) to confirm the contracts the main code relies on. Their own headers document those entry points as thread-safe. They are out of scope as review targets and are not assessed here beyond that interface.</li>
+        <li><strong>Assumption:</strong> The public API is consumed from Objective-C and Swift UI code via KVO on <code>Sensors.data</code>/<code>loading</code> and on each <code>SensorHistoryData</code>'s <code>values</code>/<code>min</code>/<code>max</code>/<code>last</code>; findings about ordering and KVO are framed with that consumer in mind.</li>
+    </ul>
+</div>
+
+<h2>Findings</h2>
+
+<!-- MEDIUM 1 -->
+<div class="finding medium">
+    <div class="finding-head">
+        <span class="pill sev-medium">Medium</span>
+        <span class="tag">correctness</span>
+        <span class="tag">API / UX</span>
+        <h3>Published <code>data</code> has nondeterministic element order</h3>
+    </div>
+    <span class="loc">SensorsKit/Sensors.swift:135–141</span>
+    <p>
+        Each polling pass republishes the histories with
+        <code>self.data = [ SensorHistoryData ]( sensors.values )</code>, where
+        <code>sensors</code> is a <code>[String: SensorHistoryData]</code>.
+        Swift's <code>Dictionary.values</code> has an <em>unspecified</em> iteration
+        order, and that order changes as keys are inserted — which happens whenever
+        a new sensor first appears during the run. A consumer that binds
+        <code>data</code> to a table or list (the natural use of a KVO-observable
+        array) will see rows reorder arbitrarily from one second to the next, and
+        cannot rely on index stability across updates.
+    </p>
+    <div class="rec">
+        <span class="label">Recommendation</span>
+        <p style="margin:.4rem 0 0;">Publish a deterministically ordered array, e.g.
+        sort by a stable composite key before assigning:
+        <code>self.data = sensors.values.sorted { ($0.source.rawValue, $0.kind.rawValue, $0.name) &lt; ($1.source.rawValue, $1.kind.rawValue, $1.name) }</code>.
+        This also makes the tests and any UI deterministic.</p>
+    </div>
+</div>
+
+<!-- MEDIUM 2 -->
+<div class="finding medium">
+    <div class="finding-head">
+        <span class="pill sev-medium">Medium</span>
+        <span class="tag">stability</span>
+        <span class="tag">resource leak</span>
+        <h3>Object retains itself for its lifetime; forgetting <code>stop()</code> leaks it and never halts polling</h3>
+    </div>
+    <span class="loc">SensorsKit/Sensors.swift:62–124 (no <code>deinit</code>)</span>
+    <p>
+        <code>init()</code> dispatches <code>self.run()</code> onto a global queue,
+        and that escaping closure — together with the repeating timer's
+        <code>{ _ in self.readSensors() }</code> closure — holds a strong reference
+        to <code>self</code> for as long as <code>run()</code> is executing.
+        <code>run()</code> only returns once <code>shouldRun</code> becomes
+        <code>false</code>, which happens exclusively inside <code>stop()</code>.
+        There is no <code>deinit</code>, and none is reachable while the loop runs.
+    </p>
+    <p>
+        Consequently, if a caller creates a <code>Sensors</code> and simply releases
+        its last reference without calling <code>stop()</code>, ARC cannot
+        deallocate it: the object leaks and its 1&nbsp;Hz polling loop (reading
+        <em>all</em> SMC keys plus every IOHID sensor each second) keeps running for
+        the remainder of the process. For a reusable framework this is an easy
+        footgun to hit.
+    </p>
+    <div class="rec">
+        <span class="label">Recommendation</span>
+        <p style="margin:.4rem 0 0;">Document explicitly that <code>stop()</code> is
+        mandatory for reclamation, and/or break the self-retention so the object can
+        stop on deallocation — e.g. drive the loop from a weak reference and add a
+        <code>deinit</code> that requests the loop to end. At minimum, note in the
+        class docs that dropping the object without <code>stop()</code> leaks it.</p>
+    </div>
+</div>
+
+<!-- LOW 1 -->
+<div class="finding low">
+    <div class="finding-head">
+        <span class="pill sev-low">Low</span>
+        <span class="tag">performance</span>
+        <span class="tag">threading</span>
+        <h3>Run loop is driven on a shared GCD worker thread; <code>stop()</code> latency up to ~5&nbsp;s</h3>
+    </div>
+    <span class="loc">SensorsKit/Sensors.swift:67–70, 108–111</span>
+    <p>
+        The polling loop runs <code>RunLoop.current.run(until:)</code> on a thread
+        borrowed from the <code>.background</code> global concurrent queue, and holds
+        that thread for the object's entire lifetime. Occupying a pooled libdispatch
+        worker thread indefinitely is discouraged; several concurrent
+        <code>Sensors</code> instances could starve the background pool. Separately,
+        the loop only re-checks <code>shouldRun</code> every 5 seconds
+        (<code>Date(timeIntervalSinceNow: 5)</code>), so after <code>stop()</code> the
+        timer keeps firing <code>readSensors()</code> and the completion is delayed by
+        up to ~5&nbsp;s.
+    </p>
+    <div class="rec">
+        <span class="label">Recommendation</span>
+        <p style="margin:.4rem 0 0;">Prefer a dedicated <code>Thread</code> for a
+        long-lived run loop rather than a GCD global-queue thread, and either use a
+        shorter <code>run(until:)</code> window or explicitly wake/stop the run loop
+        from <code>stop()</code> so teardown is prompt.</p>
+    </div>
+</div>
+
+<!-- LOW 2 -->
+<div class="finding low">
+    <div class="finding-head">
+        <span class="pill sev-low">Low</span>
+        <span class="tag">readability</span>
+        <h3>Swapped local variable names in the <code>min</code> / <code>max</code> getters</h3>
+    </div>
+    <span class="loc">SensorsKit/SensorHistoryData.swift:112–140</span>
+    <p>
+        The behavior is correct (the tests confirm <code>min</code> returns the
+        smallest and <code>max</code> the largest), but the local bindings are
+        inverted: the <code>min</code> getter binds <code>self.data.min()</code> to a
+        variable named <code>max</code> and returns it, while the <code>max</code>
+        getter binds <code>self.data.max()</code> to a variable named
+        <code>min</code>. Reading <code>return NSNumber( floatLiteral: max )</code>
+        inside the property literally named <code>min</code> invites a future
+        "fix" that would actually introduce a bug.
+    </p>
+    <div class="rec">
+        <span class="label">Recommendation</span>
+        <p style="margin:.4rem 0 0;">Rename the local bindings to match the property
+        (or bind directly, e.g. <code>guard let value = self.data.min() else { return nil }</code>).</p>
+    </div>
+</div>
+
+<!-- LOW 3 -->
+<div class="finding low">
+    <div class="finding-head">
+        <span class="pill sev-low">Low</span>
+        <span class="tag">correctness</span>
+        <h3>Redundant re-scheduling of the timer on the run loop</h3>
+    </div>
+    <span class="loc">SensorsKit/Sensors.swift:100–106</span>
+    <p>
+        <code>Timer.scheduledTimer(withTimeInterval:repeats:)</code> already creates
+        the timer <em>and</em> adds it to the current run loop in
+        <code>.default</code> mode. The following
+        <code>RunLoop.current.add(timer, forMode: .default)</code> adds the same
+        timer to the same run loop and mode again. A timer belongs to a single run
+        loop; the second add is redundant and misleading (it reads as if it were
+        required for the timer to fire).
+    </p>
+    <div class="rec">
+        <span class="label">Recommendation</span>
+        <p style="margin:.4rem 0 0;">Drop the explicit <code>RunLoop.current.add(...)</code>,
+        or switch to <code>Timer(timeInterval:...)</code> + a single explicit
+        <code>add(...)</code> if manual scheduling is intended.</p>
+    </div>
+</div>
+
+<!-- LOW 4 -->
+<div class="finding low">
+    <div class="finding-head">
+        <span class="pill sev-low">Low</span>
+        <span class="tag">correctness</span>
+        <span class="tag">domain</span>
+        <h3>SMC keys are classified purely by first-letter prefix (<code>T</code>/<code>V</code>/<code>I</code>)</h3>
+    </div>
+    <span class="loc">SensorsKit/Sensors.swift:156–163</span>
+    <p>
+        <code>readSMCSensors()</code> records every key whose name starts with
+        <code>T</code>, <code>V</code> or <code>I</code> and labels it thermal,
+        voltage or current respectively. The SMC keyspace is not that clean: not
+        every <code>T…</code>/<code>V…</code>/<code>I…</code> key is a temperature,
+        voltage or current reading, and non-sensor keys that happen to decode to a
+        <code>Double</code>/<code>Float32</code> will be surfaced and mislabeled.
+        Keys outside those three prefixes are silently dropped even if they are
+        sensors. This is an inherent heuristic, but worth flagging as a known source
+        of false positives/negatives in the exposed data.
+    </p>
+    <div class="rec">
+        <span class="label">Recommendation</span>
+        <p style="margin:.4rem 0 0;">If accuracy matters, gate on a curated key
+        allow-list or on the SMC value <em>type</em> in addition to the name prefix.
+        Otherwise, document that the classification is a best-effort heuristic.</p>
+    </div>
+</div>
+
+<!-- LOW 5 -->
+<div class="finding low">
+    <div class="finding-head">
+        <span class="pill sev-low">Low</span>
+        <span class="tag">API</span>
+        <h3><code>stop(completion:)</code> silently drops the completion on a repeat call</h3>
+    </div>
+    <span class="loc">SensorsKit/Sensors.swift:81–90</span>
+    <p>
+        If <code>stop()</code> is called a second time (or after the loop has already
+        stopped), the early <code>return</code> means the newly supplied
+        <code>completion</code> is never invoked and is silently discarded. A caller
+        awaiting that completion — e.g. the
+        <code>withCheckedContinuation</code> pattern used in the tests — would hang
+        forever if it happened to be the second stop.
+    </p>
+    <div class="rec">
+        <span class="label">Recommendation</span>
+        <p style="margin:.4rem 0 0;">When already stopped, invoke the supplied
+        <code>completion</code> immediately (documenting the semantics), rather than
+        dropping it.</p>
+    </div>
+</div>
+
+<!-- INFO 1 -->
+<div class="finding info">
+    <div class="finding-head">
+        <span class="pill sev-info">Info</span>
+        <span class="tag">KVO</span>
+        <h3>Manual KVO is fired asynchronously and may coalesce intermediate values</h3>
+    </div>
+    <span class="loc">SensorsKit/SensorHistoryData.swift:191–202</span>
+    <p>
+        <code>add(value:)</code> posts <code>willChangeValue</code>/<code>didChangeValue</code>
+        for the four derived keys inside a <code>DispatchQueue.main.async</code>
+        block, after the underlying <code>data</code> has already been updated. When
+        samples arrive faster than main drains, several notifications queue up and
+        each observer re-reads the current (latest) state, so intermediate values may
+        never be observed. This is acceptable for a UI that only wants the current
+        value, but the notification does not correspond to a single discrete change
+        — worth being aware of if a consumer expects one-notification-per-sample.
+    </p>
+</div>
+
+<!-- INFO 2 -->
+<div class="finding info">
+    <div class="finding-head">
+        <span class="pill sev-info">Info</span>
+        <span class="tag">robustness</span>
+        <h3><code>Synchronizable</code> does not release the lock via <code>defer</code></h3>
+    </div>
+    <span class="loc">SensorsKit/Synchronizable.swift:60–85</span>
+    <p>
+        Both helpers call <code>objc_sync_enter</code>, run the closure, then
+        <code>objc_sync_exit</code>. This is safe today because the closure type is
+        non-throwing, so it cannot exit early between enter and exit. If the API
+        ever gains a throwing/rethrowing variant, an early exit would leave the lock
+        held. Using <code>defer { objc_sync_exit(self) }</code> would make the
+        release unconditional and future-proof.
+    </p>
+</div>
+
+<!-- INFO 3 -->
+<div class="finding info">
+    <div class="finding-head">
+        <span class="pill sev-info">Info</span>
+        <span class="tag">consistency</span>
+        <h3><code>description</code> reads <code>min</code> and <code>max</code> under separate locks</h3>
+    </div>
+    <span class="loc">SensorsKit/SensorHistoryData.swift:208–214</span>
+    <p>
+        The <code>description</code> override reads <code>self.min</code> and
+        <code>self.max</code> in two separate synchronized acquisitions, so a
+        concurrent <code>add</code> between them could make the printed min/max
+        reflect slightly different states. Purely cosmetic (debug output), noted for
+        completeness.
+    </p>
+</div>
+
+<!-- INFO 4 -->
+<div class="finding info">
+    <div class="finding-head">
+        <span class="pill sev-info">Info</span>
+        <span class="tag">docs</span>
+        <h3>Typo in README</h3>
+    </div>
+    <span class="loc">README.md:13</span>
+    <p>
+        "read access to hardware sensors via the SMC and IOHID <em>prvate</em> APIs"
+        — should be "private".
+    </p>
+</div>
+
+<h2>Strengths</h2>
+<div class="finding strength">
+    <ul>
+        <li><strong>Documentation.</strong> Every public and private type and member carries a clear SwiftDoc comment, and the intent (thread model, loading state machine, lifecycle) is explained rather than merely restated.</li>
+        <li><strong>Thread-safety model is coherent.</strong> Per-sensor mutation and reads funnel through <code>Synchronizable</code>, and <code>data</code>/<code>loading</code> are published on the main queue — consistent with the deliberate "update on main thread" fix in the history.</li>
+        <li><strong>Tests are honest about nondeterminism.</strong> <code>SensorsTests</code> avoids asserting on hardware-dependent readings and instead exercises the observable state machine; <code>SynchronizableTests</code> includes a real 10k-iteration concurrency check.</li>
+        <li><strong>CI</strong> builds, analyzes, and tests both Debug and Release with recursive submodules.</li>
+        <li><strong>Conventions</strong> (early returns, <code>let</code> over <code>var</code>, no force-unwraps, explicit <code>public</code>, one type per file) are followed throughout the primary target.</li>
+    </ul>
+</div>
+
+<h2>Appendix</h2>
+<p class="meta">Reference — the ordering finding (Medium&nbsp;1), for context:</p>
+<pre><code>// Sensors.swift — republished every second
+let sensors = self.sensors            // [String: SensorHistoryData]
+
+DispatchQueue.main.async
+{
+    self.data    = [ SensorHistoryData ]( sensors.values )  // order is unspecified
+    self.loading = false
+}</code></pre>
+
+</div>
