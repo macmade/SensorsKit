@@ -64,6 +64,20 @@
 			remoteGlobalIDString = 05BD7281299275AB00CF4FD7;
 			remoteInfo = IOHIDKit;
 		};
+		05E2A6D23008CD440038C2A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD73412992CA5A00CF4FD7 /* IOHIDKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AAAA00000000000000000002;
+			remoteInfo = "IOHIDKit-Tests";
+		};
+		05E2A6D73008CD440038C2A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05BD73472992CA5E00CF4FD7 /* SMCKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0FCE00000000000000000008;
+			remoteInfo = SMCKitTests;
+		};
 		C9CB288460C51CBC260F9FC1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 05BD7279299275AB00CF4FD7 /* Project object */;
@@ -338,6 +352,7 @@
 			isa = PBXGroup;
 			children = (
 				05BD73462992CA5A00CF4FD7 /* IOHIDKit.framework */,
+				05E2A6D33008CD440038C2A2 /* IOHIDKit-Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -348,6 +363,7 @@
 				05BD734C2992CA5F00CF4FD7 /* SMCKit.framework */,
 				058B8E3D299432F100263FE9 /* libSMC.a */,
 				058B8E3F299432F100263FE9 /* smc-dump */,
+				05E2A6D83008CD440038C2A2 /* SMCKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -367,7 +383,6 @@
 				FA09BF05664E46A44D2E9F60 /* SynchronizableTests.swift */,
 				2FBB754202A8F54E2E6E11E3 /* SensorsTests.swift */,
 			);
-			name = SensorsKitTests;
 			path = SensorsKitTests;
 			sourceTree = "<group>";
 		};
@@ -438,7 +453,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					05BD7281299275AB00CF4FD7 = {
 						CreatedOnToolsVersion = 14.2;
@@ -502,6 +517,20 @@
 			fileType = wrapper.framework;
 			path = SMCKit.framework;
 			remoteRef = 05BD734B2992CA5F00CF4FD7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		05E2A6D33008CD440038C2A2 /* IOHIDKit-Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "IOHIDKit-Tests.xctest";
+			remoteRef = 05E2A6D23008CD440038C2A2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		05E2A6D83008CD440038C2A2 /* SMCKitTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SMCKitTests.xctest;
+			remoteRef = 05E2A6D73008CD440038C2A2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -648,7 +677,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xs-labs.SensorsKitTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -667,7 +696,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xs-labs.SensorsKitTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
